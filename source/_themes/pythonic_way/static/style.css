@@ -1,0 +1,30 @@
+@import url("classic.css"); /* make sure to sync this with the base theme's css filename */
+
+
+table.docutils {
+    border: 1px solid;
+    border-collapse: collapse;
+}
+
+table.docutils td, table.docutils th {
+    border-color: -moz-use-text-color -moz-use-text-color #aaa;
+    border-style: solid;
+    border-width: 1px;
+    padding: 1px 8px 1px 5px;
+}
+#references table.citation {
+	border-style: none;
+}
+
+#references table.citation td, #references table.citation th{
+    border-style: none;
+}
+
+.red-font {
+    color:red;
+}
+
+
+.highlight-text .highlight .hll {
+    background-color: #FF6666;
+}
