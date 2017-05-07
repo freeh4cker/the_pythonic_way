@@ -28,3 +28,8 @@ table.docutils td, table.docutils th {
 .highlight-text .highlight .hll {
     background-color: #FF6666;
 }
+
+#copyright, #last_updated, #show_sphinx, #license {
+    float:left;
+    width:33%;
+}
