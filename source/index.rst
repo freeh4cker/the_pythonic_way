@@ -44,12 +44,24 @@ Welcome to The Pythonic Way
       </a>
    </div>
 
-Contents:
+
+Courses:
 
 .. toctree::
    :maxdepth: 2
 
+   fundamentals
+   closure
+   decorators
 
+Coock book:
+
+.. toctree::
+   :maxdepth: 2
+
+   fasta_reader
+   subprocess
+   test_mock
 
 Indices and tables
 ==================
