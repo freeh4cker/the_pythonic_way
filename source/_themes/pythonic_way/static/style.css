@@ -31,11 +31,21 @@ table.docutils td, table.docutils th {
 
 #copyright, #last_updated, #show_sphinx, #license {
     float:left;
-    width:33%;
+    width:32%;
+}
+#show_sphinx {
+    padding-bottom: 1em;
+}
+#copyright, #last_updated {
+    padding-left: 1em;
+    text-align: left;
+}
+#license {
+    text-align: right;
 }
 
 #zen-of-python {
-    margin-top: 3em;
+    margin: 5em;
     border: 1px dashed #2f6fab;
     background-color: #f5fffa;
     margin: auto;
