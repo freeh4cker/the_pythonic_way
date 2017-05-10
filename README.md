@@ -1,4 +1,4 @@
-# the pythonic way
+# The pythonic way
 
 The aim of this site is to provide a cookbook (working examples)
 or courses on specific topics programming with the best programming language: Python ;-)
@@ -27,15 +27,15 @@ To contribute, fix bugs (typos, error), create new pages
 
 Project Structure
 
-    * docs -- The html generate by sphinx. The content of this directory is pushed publish on github pages
-    * doctrees -- Generate by sphinx not directly used
-    * source
-     * *.rst -- The source files in Restructured Text.
-     * _static
-        * figs -- The figure used in the site.
-        * code -- The python code files used.
-     * _templates -- The files to customize the *classic* css.
-     * _themes -- The custom theme used for this site (inherit from *classic*).
-    * LICENSE -- What you can do with the code.
-    * Makefile -- to automate the html generation, *make html*.
-    * REAMDE.md -- This file.
+* docs -- The html generate by sphinx. The content of this directory is pushed publish on github pages
+* doctrees -- Generate by sphinx not directly used
+* source
+ * *.rst -- The source files in Restructured Text.
+ * _static
+    * figs -- The figure used in the site.
+    * code -- The python code files used.
+ * _templates -- The files to customize the *classic* css.
+ * _themes -- The custom theme used for this site (inherit from *classic*).
+* LICENSE -- What you can do with the code.
+* Makefile -- to automate the html generation, *make html*.
+* REAMDE.md -- This file.
