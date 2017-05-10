@@ -25,3 +25,17 @@ To contribute, fix bugs (typos, error), create new pages
  4. check the result locally (make html)
  5. ask for a pull request on the source code, not on the generated html (do not commit anything in docs directory).
 
+Project Structure
+
+    * docs -- The html generate by sphinx. The content of this directory is pushed publish on github pages
+    * doctrees -- Generate by sphinx not directly used
+    * source
+     * *.rst -- The source files in Restructured Text.
+     * _static
+        * figs -- The figure used in the site.
+        * code -- The python code files used.
+     * _templates -- The files to customize the *classic* css.
+     * _themes -- The custom theme used for this site (inherit from *classic*).
+    * LICENSE -- What you can do with the code.
+    * Makefile -- to automate the html generation, *make html*.
+    * REAMDE.md -- This file.
