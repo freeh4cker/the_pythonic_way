@@ -46,6 +46,7 @@ Welcome to The Pythonic Way
 
 
 Courses:
+========
 
 .. toctree::
    :maxdepth: 1
@@ -54,7 +55,8 @@ Courses:
    closure
    decorators
 
-Coock book:
+Cook book:
+==========
 
 .. toctree::
    :maxdepth: 1
