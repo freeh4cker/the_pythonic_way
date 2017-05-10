@@ -9,7 +9,7 @@ Welcome to The Pythonic Way
 | The aim of this site is to provide a cookbook (working examples) or courses on specific topics programming with the best programming language: Python ;-)
 | If you want to improve the content of this website, fork me (https://github.com/freeh4cker/the_pythonic_way) and submit a pull request (see contributing).
 | Before to dive into Python I can not prevent myself from remember these few guiding principles for Python's design.
-
+|
 
 
 .. raw:: html
@@ -44,6 +44,8 @@ Welcome to The Pythonic Way
       </a>
    </div>
 
+|
+|
 
 Courses:
 ========
