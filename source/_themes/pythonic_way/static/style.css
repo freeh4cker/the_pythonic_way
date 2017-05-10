@@ -20,6 +20,17 @@ table.docutils td, table.docutils th {
     border-style: none;
 }
 
+
+div.important {
+    background-color: #fee;
+    border: 1px solid #fcc;
+}
+
+p.admonition-title + p {
+    display: block !important;
+}
+
+
 .red-font {
     color:red;
 }
