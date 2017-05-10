@@ -1,0 +1,433 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Scripting with subprocess, beware of the traps. &#8212; The Pythonic Way</title>
+    
+    <link rel="stylesheet" href="_static/style.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Test with mock" href="test_mock.html" />
+    <link rel="prev" title="Lightweight and efficient Fasta reader." href="fasta_reader.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="test_mock.html" title="Test with mock"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="fasta_reader.html" title="Lightweight and efficient Fasta reader."
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">The Pythonic Way</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="scripting-with-subprocess-beware-of-the-traps">
+<span id="subprocess"></span><h1>Scripting with subprocess, beware of the traps.<a class="headerlink" href="#scripting-with-subprocess-beware-of-the-traps" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="scripting">
+<span id="id1"></span><h2>Scripting<a class="headerlink" href="#scripting" title="Permalink to this headline">¶</a></h2>
+<p>What we call <em>scripting</em> is the execution of external programs such as <em>blast</em>, <em>hmmsearch</em>, <em>bwa</em>, ...
+from our python programs. The scripting is a important part for bioinformatics.</p>
+<p>In Python there is a module <code class="docutils literal"><span class="pre">Subprocess</span></code> which dedicated to run and communicate with external programs.
+<code class="docutils literal"><span class="pre">Subprocess</span></code> has been add in Python since 2.4 version. This is the recommended method to execute a program within a python script.
+This module intend to standardize and replace several other modules and functions.</p>
+<ul class="simple">
+<li>os.system</li>
+<li>os.spawn*</li>
+<li>os.popen*</li>
+<li>popen2.*</li>
+<li>commands.*</li>
+</ul>
+<p>Although the API has been easier than previous one, there still traps to avoid.
+The <code class="docutils literal"><span class="pre">subprocess.call</span></code> function was the recommended way to execute an external program in python 2.7,
+this function has been superseded in python 3.5 by the subprocess.run function.
+But these 2 functions have severe limitations (see <a class="reference internal" href="#pipes-problems">PIPEs Problems</a>), so it is useful to learn to use
+directly the low level <a class="reference external" href="https://docs.python.org/2/library/subprocess.html#subprocess.Popen" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">subprocess.Popen</span></code></a> object.</p>
+<div class="section" id="shell-true-vs-false">
+<h3>Shell True vs False<a class="headerlink" href="#shell-true-vs-false" title="Permalink to this headline">¶</a></h3>
+<p>The <strong>shell</strong> parameter specify if the subprocess is executed in a sub-shell or directly.
+But this also influence the way the command line is passed to the Popen constructor.</p>
+<ul>
+<li><p class="first"><strong>shell = False</strong> : the program is executed directly, the first argument is a list of string and arg[0] must be the binary to execute.
+The others items are the options of this binary.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">subprocess</span> <span class="k">import</span> <span class="n">Popen</span>
+<span class="n">blast_process</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">(</span> <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;/local/gensoft/scripts/blastall&#39;</span><span class="p">,</span>
+                               <span class="s1">&#39;-p&#39;</span><span class="p">,</span> <span class="s1">&#39;blastp&#39;</span><span class="p">,</span>
+                               <span class="s1">&#39;-d&#39;</span><span class="p">,</span> <span class="s1">&#39;uniprot_sprot&#39;</span><span class="p">,</span>
+                               <span class="s1">&#39;-i&#39;</span><span class="p">,</span> <span class="s1">&#39;DataBio/Sequences/Proteique/abcd2_mouse.fa&#39;</span><span class="p">,</span>
+                               <span class="s1">&#39;-b&#39;</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">,</span>
+                               <span class="s1">&#39;-v&#39;</span><span class="p">,</span> <span class="s1">&#39;5&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first"><strong>shell = True</strong> : in this case the subprocess is executed in a sub-shell, args must be a <code class="docutils literal"><span class="pre">string</span></code> formatted as the command is typed in a terminal.
+This include the <em>quote</em> or <em>backslash</em> to escape spaces etc.
+If args is a list, the first item will be executed in a sub-shell but the other items will be consider as options of the shell itself.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">subprocess</span> <span class="k">import</span> <span class="n">Popen</span>
+<span class="n">blast_process</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">(</span><span class="n">args</span> <span class="o">=</span> <span class="s1">&#39;blastall -p blastp -d uniprot_sprot </span><span class="se">\</span>
+<span class="s1">                                 -i DataBio/Sequences/Proteique/abcd2_mouse.fa -b 2 -v 5&#39;</span><span class="p">,</span>
+                      <span class="n">shell</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+<div class="section" id="environment-variables">
+<h3>Environment Variables<a class="headerlink" href="#environment-variables" title="Permalink to this headline">¶</a></h3>
+<p>By default the subprocess inherits of the main process environment.
+If we want that the subprocess inherits of a environment variable simply add it in the main environment.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;BLASTDB&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;/home/toto/BioBank/blast&#39;</span>
+<span class="kn">from</span> <span class="nn">subprocess</span> <span class="k">import</span> <span class="n">Popen</span>
+<span class="n">blast_process</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">(</span><span class="n">args</span> <span class="o">=</span> <span class="s1">&#39;blastall -p blastp -d my_bank </span><span class="se">\</span>
+<span class="s1">                                  -i DataBio/Sequences/Proteique/abcd2_mouse.fa -b 2 -v 5&#39;</span><span class="p">,</span>
+                      <span class="n">shell</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>It is also possible to specify a new environment to the subprocess <em>via</em> the <code class="docutils literal"><span class="pre">env</span></code> argument.
+But be careful, in this case all the environment is replaced. <strong>BEWARE</strong> to the PATH. In this case the <code class="docutils literal"><span class="pre">env</span></code> is a dictionary.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">new_env</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;PATH&#39;</span> <span class="p">:</span> <span class="s1">&#39;/home/toto/bin&#39;</span> <span class="p">,</span>
+            <span class="s1">&#39;BLASTDB&#39;</span> <span class="p">:</span> <span class="s1">&#39;/home/toto/BioBank/blast&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;BLASTMAT&#39;</span> <span class="p">:</span> <span class="s1">&#39;/home/toto/share/Matrix&#39;</span>
+           <span class="p">}</span>
+<span class="n">blast_process</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">(</span><span class="n">args</span> <span class="o">=</span> <span class="s1">&#39;blastall -p blastp -d my_bank </span><span class="se">\</span>
+<span class="s1">                                  -i DataBio/Sequences/Proteique/abcd2_mouse.fa -b 2 -v 5&#39;</span><span class="p">,</span>
+                       <span class="n">env</span> <span class="o">=</span> <span class="n">new_env</span><span class="p">,</span> <span class="n">shell</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="get-the-standard-and-error-output">
+<h3>Get the standard and error output<a class="headerlink" href="#get-the-standard-and-error-output" title="Permalink to this headline">¶</a></h3>
+<p>By default <code class="docutils literal"><span class="pre">Popen</span></code> redirect subprocess the <em>standard</em> and <em>error</em> outputs on <code class="docutils literal"><span class="pre">sys.stdout</span></code> and <code class="docutils literal"><span class="pre">sys.stderr</span></code> respectively.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="n">blast_process</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">(</span><span class="s1">&#39;blastall -p blastp -d my_bank </span><span class="se">\</span>
+<span class="s1">                                -i DataBio/Sequences/Proteique/abcd2_mouse.fa -b 2 -v 5&#39;</span><span class="p">,</span>
+                       <span class="n">shell</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                       <span class="n">stdout</span> <span class="o">=</span> <span class="n">blast_out</span><span class="p">,</span>
+                       <span class="n">stderr</span> <span class="o">=</span> <span class="n">blast_err</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="section" id="redirect-outputs-in-files">
+<h4>Redirect outputs in files<a class="headerlink" href="#redirect-outputs-in-files" title="Permalink to this headline">¶</a></h4>
+<p>instead to diplay <code class="docutils literal"><span class="pre">stderr</span></code> and <code class="docutils literal"><span class="pre">stdout</span></code> it&#8217;s often useful to harvest results in the following of the script in files.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">subprocess</span> <span class="kn">import</span> <span class="n">Popen</span>
+<span class="n">blast_out</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;blast.out&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+<span class="n">blast_err</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;blast.err&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+   <span class="n">blast_process</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">(</span><span class="s1">&#39;blastall -p blastp -d uniprot_sprot </span><span class="se">\</span>
+<span class="s1">                                   -i DataBio/Sequences/Proteique/abcd2_mouse.fa -b 2 -v 5&#39;</span><span class="p">,</span>
+                          <span class="n">shell</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                          <span class="n">stdout</span> <span class="o">=</span> <span class="n">blast_out</span><span class="p">,</span>
+                          <span class="n">stderr</span> <span class="o">=</span> <span class="n">blast_err</span><span class="p">)</span>
+   <span class="n">blast_process</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+<span class="k">finally</span><span class="p">:</span>
+   <span class="n">blast_out</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+   <span class="n">blast_out</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">blast_process</span><span class="o">.</span><span class="n">returncode</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+   <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;probleme durant l&#39;execution du blast:</span><span class="se">\n</span><span class="s2">&quot;</span>
+   <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;blast.err&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">blast_err</span><span class="p">:</span>
+      <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">blast_err</span><span class="p">:</span>
+         <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span> <span class="o">+</span> <span class="n">line</span>
+   <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span> <span class="n">msg</span> <span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+   <span class="k">print</span> <span class="s2">&quot;le blast c&#39;est bien fini, suite du script&quot;</span>
+   <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;blast.out&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">blast_out</span><span class="p">:</span>
+      <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">blast_out</span><span class="p">:</span>
+         <span class="k">print</span> <span class="n">line</span><span class="p">,</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="pipes-problems">
+<h4>PIPEs Problems<a class="headerlink" href="#pipes-problems" title="Permalink to this headline">¶</a></h4>
+<p>Sometimes we want to get the standard and/or error output  directly without using files.
+To do this we need to pass the constant <code class="docutils literal"><span class="pre">subprocress.PIPE</span></code> to the arguments <em>stdout</em> and <em>stderr</em>.
+<strong>BEWARE</strong> in this case the subprocess write in a buffer available <em>via</em> the property <code class="docutils literal"><span class="pre">stdout</span></code> or <code class="docutils literal"><span class="pre">stderr</span></code> of the subprocess object.
+<strong>BUT</strong> if <strong>ONE</strong> of the buffer become to be full the process is blocked. This situation can induced a dead lock.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">subprocess</span> <span class="kn">import</span> <span class="n">Popen</span><span class="p">,</span> <span class="n">PIPE</span>
+
+<span class="n">blast_process</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">(</span><span class="s1">&#39;blastall -p blastp -d uniprot_sprot </span><span class="se">\</span>
+<span class="s1">                                -i DataBio/Sequences/Proteique/abcd2_mouse.fa&#39;</span><span class="p">,</span>
+                      <span class="n">shell</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span>
+                      <span class="n">stdout</span> <span class="o">=</span> <span class="n">PIPE</span><span class="p">,</span>
+                      <span class="n">stderr</span> <span class="o">=</span> <span class="n">PIPE</span><span class="p">)</span>
+<span class="n">blast_process</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+
+<span class="k">print</span> <span class="s2">&quot;This code could never be executed&quot;</span>
+</pre></div>
+</div>
+<p>The call tho the <code class="docutils literal"><span class="pre">wait</span></code> method block the python script execution until the subprocess is finished. But the subprocess
+filled the buffer if this one is full. We are in a deadlock. python wait the subprocess which wait python consume the buffers.
+So we should not use wait the end of subprocess but use a loop while and the <em>poll</em> method.
+The <em>poll</em> method return None while the subprocess is running. and we have to consume the both output in the same time.
+To consume several flow at the same time we can use the <code class="docutils literal"><span class="pre">select</span></code> module.</p>
+<p>This module provide 2 functions <code class="docutils literal"><span class="pre">select</span></code> and <code class="docutils literal"><span class="pre">poll</span></code> available for most of the operating system and <code class="docutils literal"><span class="pre">epoll</span></code> for linux &gt; kernel 2.5 and kqueue on BSD.
+On windows <code class="docutils literal"><span class="pre">select</span></code> and <code class="docutils literal"><span class="pre">poll</span></code> work on sockets, for the others OS it works also on the files and pipes.</p>
+<div class="section" id="poll-implementation">
+<h5>poll implementation<a class="headerlink" href="#poll-implementation" title="Permalink to this headline">¶</a></h5>
+<p>pseudo code of poll using</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">create</span> <span class="n">a</span> <span class="n">poll</span> <span class="nb">object</span>
+<span class="n">register</span> <span class="n">flow</span> <span class="n">we</span> <span class="n">want</span> <span class="n">to</span> <span class="n">watch</span> <span class="k">with</span> <span class="n">the</span> <span class="n">right</span> <span class="n">corresponding</span> <span class="nb">filter</span>
+<span class="n">start</span> <span class="n">the</span> <span class="n">flow</span> <span class="n">watching</span>
+<span class="n">at</span> <span class="n">each</span> <span class="n">event</span> <span class="n">on</span> <span class="n">a</span> <span class="n">flux</span>
+  <span class="n">check</span> <span class="n">wich</span> <span class="n">event</span> <span class="n">happened</span>
+  <span class="n">check</span> <span class="n">which</span> <span class="n">flow</span> <span class="n">generate</span> <span class="n">this</span> <span class="n">event</span>
+      <span class="n">provide</span> <span class="n">an</span> <span class="n">adequate</span> <span class="n">response</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">select</span>
+<span class="n">process_</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">(</span>
+                  <span class="s1">&#39;blastall -p blastp -d uniprot_sprot </span><span class="se">\</span>
+<span class="s1">                  -i DataBio/Sequences/Proteique/abcd2_mouse.fa&#39;</span><span class="p">,</span>
+                  <span class="n">shell</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span>
+                  <span class="n">shell</span> <span class="o">=</span> <span class="bp">True</span> <span class="p">,</span>
+                  <span class="n">stdout</span> <span class="o">=</span> <span class="n">PIPE</span> <span class="p">,</span>
+                  <span class="n">stdin</span> <span class="o">=</span> <span class="bp">None</span> <span class="p">,</span>
+                  <span class="n">stderr</span> <span class="o">=</span> <span class="n">PIPE</span> <span class="p">,</span>
+                  <span class="p">)</span>
+<span class="n">READ_ONLY</span> <span class="o">=</span> <span class="n">select</span><span class="o">.</span><span class="n">POLLIN</span> <span class="o">|</span> <span class="n">select</span><span class="o">.</span><span class="n">POLLPRI</span> <span class="o">|</span> <span class="n">select</span><span class="o">.</span><span class="n">POLLHUP</span> <span class="o">|</span> <span class="n">select</span><span class="o">.</span><span class="n">POLLERR</span>
+<span class="c1"># create a poll object</span>
+<span class="n">poller</span> <span class="o">=</span> <span class="n">select</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span>
+<span class="c1"># register the flow with reading filter</span>
+<span class="n">poller</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">process_</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">READ_ONLY</span><span class="p">)</span>
+<span class="n">poller</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">process_</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span> <span class="n">READ_ONLY</span><span class="p">)</span>
+<span class="c1">#start watching the flows</span>
+<span class="k">while</span> <span class="n">process_</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+    <span class="c1"># at each poll call we have a list of tuple with 2 int.</span>
+    <span class="c1"># [(fd1, flag) , (fd2,flag)]</span>
+    <span class="c1"># fd is a file descriptor</span>
+    <span class="c1"># flag match a combination of</span>
+    <span class="c1"># select.POLLIN | select.POLLPRI | select.POLLHUP | select.POLLERR</span>
+    <span class="c1"># this list match with the fd ready to be processed in</span>
+    <span class="c1"># reading or writing depending of their creation.</span>
+    <span class="c1"># beware this is a blocking call while a fd is not ready (we provide a timeout as argument)</span>
+    <span class="n">events</span> <span class="o">=</span>  <span class="n">poller</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span>
+    <span class="k">while</span> <span class="n">events</span> <span class="p">:</span>
+        <span class="k">for</span> <span class="n">fd</span><span class="p">,</span> <span class="n">flag</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">flag</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">select</span><span class="o">.</span><span class="n">POLLIN</span> <span class="o">|</span> <span class="n">select</span><span class="o">.</span><span class="n">EPOLLPRI</span><span class="p">):</span> <span class="c1"># some data are ready to be read</span>
+                <span class="k">if</span> <span class="n">fd</span> <span class="o">==</span> <span class="n">process_</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">fileno</span><span class="p">():</span>
+                    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span> <span class="n">process_</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="p">)</span>
+                <span class="k">if</span> <span class="n">fd</span> <span class="o">==</span> <span class="n">process_</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">fileno</span><span class="p">():</span>
+                    <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">write</span><span class="p">(</span> <span class="n">process_</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="p">)</span>
+            <span class="k">elif</span> <span class="n">flag</span> <span class="o">&amp;</span> <span class="n">select</span><span class="o">.</span><span class="n">EPOLLHUP</span><span class="p">:</span> <span class="c1"># the fd has been closed by the source</span>
+                <span class="n">poller</span><span class="o">.</span><span class="n">unregister</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">flag</span> <span class="o">&amp;</span> <span class="n">select</span><span class="o">.</span><span class="n">EPOLLERR</span><span class="p">:</span> <span class="c1"># an error on the fd has occurred</span>
+                <span class="n">poller</span><span class="o">.</span><span class="n">unregister</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span>
+                <span class="c1"># handle the error</span>
+        <span class="n">events</span> <span class="o">=</span>  <span class="n">poller</span><span class="o">.</span><span class="n">poll</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># the number as argument is the timeout (in millisecond)</span>
+        <span class="c1"># if we deregister the 2 flow at this point, we stay blocked at this instruction.</span>
+
+<span class="k">if</span> <span class="n">process_</span><span class="o">.</span><span class="n">returncode</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">RuntimeError</span>
+</pre></div>
+</div>
+<p>poll usage example by <a class="reference external" href="http://pymotw.com/2/select/#poll">Doug Hellmann</a></p>
+</div>
+<div class="section" id="select-implementation">
+<h5>select implementation<a class="headerlink" href="#select-implementation" title="Permalink to this headline">¶</a></h5>
+<p>It is possible to implement the solution using select.select()</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">select</span>
+<span class="n">process_</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">(</span>
+                  <span class="s1">&#39;blastall -p blastp -d uniprot_sprot </span><span class="se">\</span>
+<span class="s1">                            -i DataBio/Sequences/Proteique/abcd2_mouse.fa&#39;</span><span class="p">,</span>
+                  <span class="n">shell</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                  <span class="n">shell</span> <span class="o">=</span> <span class="bp">True</span> <span class="p">,</span>
+                  <span class="n">stdout</span> <span class="o">=</span> <span class="n">PIPE</span> <span class="p">,</span>
+                  <span class="n">stdin</span> <span class="o">=</span> <span class="bp">None</span> <span class="p">,</span>
+                  <span class="n">stderr</span> <span class="o">=</span> <span class="n">PIPE</span> <span class="p">,</span>
+               <span class="p">)</span>
+<span class="n">inputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">process_</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">process_</span><span class="o">.</span><span class="n">stderr</span><span class="p">]</span>
+<span class="k">while</span> <span class="n">process_</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+    <span class="c1"># select has 3 parameters, 3 lists, the sockets, the fileobject to watch</span>
+    <span class="c1"># in reading, writing, the errors</span>
+    <span class="c1"># in addition a timeout option (the call is blocking while a fileObject</span>
+    <span class="c1"># is not ready to be processed)</span>
+    <span class="c1"># by return we get 3 lists with the fileObject to be processed</span>
+    <span class="c1"># in reading, writing, errors.</span>
+    <span class="n">readable</span> <span class="p">,</span> <span class="n">writable</span><span class="p">,</span> <span class="n">exceptional</span> <span class="o">=</span> <span class="n">select</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="p">[],</span> <span class="p">[]</span> <span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">while</span> <span class="n">readable</span> <span class="ow">and</span> <span class="n">inputs</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">flow</span> <span class="ow">in</span> <span class="n">readable</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="p">:</span>
+                <span class="c1"># the flow ready in reading which has no data</span>
+                <span class="c1"># is a closed flow</span>
+                <span class="c1"># thus we must stop to watch it</span>
+                <span class="n">inputs</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">flow</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">flow</span> <span class="ow">is</span> <span class="n">process_</span><span class="o">.</span><span class="n">stdout</span><span class="p">:</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">flow</span> <span class="ow">is</span> <span class="n">process_</span><span class="o">.</span><span class="n">stderr</span><span class="p">:</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">readable</span> <span class="p">,</span> <span class="n">writable</span><span class="p">,</span> <span class="n">exceptional</span> <span class="o">=</span> <span class="n">select</span><span class="o">.</span><span class="n">select</span><span class="p">(</span> <span class="n">inputs</span><span class="p">,</span> <span class="p">[],</span> <span class="p">[]</span> <span class="p">,</span> <span class="mi">1</span> <span class="p">)</span>
+<span class="k">if</span> <span class="n">process_</span><span class="o">.</span><span class="n">returncode</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">RuntimeError</span>
+</pre></div>
+</div>
+<p>select usage example by <a class="reference external" href="http://pymotw.com/2/select/">Doug Hellmann</a></p>
+</div>
+<div class="section" id="using-communicate">
+<h5>using communicate<a class="headerlink" href="#using-communicate" title="Permalink to this headline">¶</a></h5>
+<p>Popen.communicate(input=None) allow to read data from stdout and stderr at the same time.
+This method interact with process: Send data to stdin. Read data from stdout and stderr, <strong>until end-of-file is reached</strong>.</p>
+<div class="line-block">
+<div class="line">Wait for process to terminate.</div>
+<div class="line">communicate() returns a tuple (stdoutdata, stderrdata).</div>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">The data read is buffered in memory,
+so do <strong>NOT</strong> use this method if the data size is large or unlimited.</p>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">subprocess</span> <span class="kn">import</span> <span class="n">Popen</span><span class="p">,</span> <span class="n">PIPE</span>
+
+<span class="n">blast_process</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">(</span><span class="s1">&#39;blastall -p blastp -d uniprot_sprot </span><span class="se">\</span>
+<span class="s1">                                -i DataBio/Sequences/Proteique/abcd2_mouse.fa&#39;</span><span class="p">,</span>
+                       <span class="n">shell</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span>
+                       <span class="n">stdout</span> <span class="o">=</span> <span class="n">PIPE</span><span class="p">,</span>
+                       <span class="n">stderr</span> <span class="o">=</span> <span class="n">PIPE</span><span class="p">)</span>
+<span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">blast_process</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+
+<span class="n">return_code</span> <span class="o">=</span> <span class="n">blast_process</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">return_code</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">:</span>
+   <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;something goes wrong with blastp :&quot;</span> <span class="o">+</span> <span class="n">stderr</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="authorship">
+<h3>Authorship<a class="headerlink" href="#authorship" title="Permalink to this headline">¶</a></h3>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Authors:</th><td class="field-body">freeh4cker &lt;freeh4cker (at) gmail.com&gt;</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Date:</th><td class="field-body">May 10, 2017</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Scripting with subprocess, beware of the traps.</a><ul>
+<li><a class="reference internal" href="#scripting">Scripting</a><ul>
+<li><a class="reference internal" href="#shell-true-vs-false">Shell True vs False</a></li>
+<li><a class="reference internal" href="#environment-variables">Environment Variables</a></li>
+<li><a class="reference internal" href="#get-the-standard-and-error-output">Get the standard and error output</a><ul>
+<li><a class="reference internal" href="#redirect-outputs-in-files">Redirect outputs in files</a></li>
+<li><a class="reference internal" href="#pipes-problems">PIPEs Problems</a><ul>
+<li><a class="reference internal" href="#poll-implementation">poll implementation</a></li>
+<li><a class="reference internal" href="#select-implementation">select implementation</a></li>
+<li><a class="reference internal" href="#using-communicate">using communicate</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#authorship">Authorship</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="fasta_reader.html"
+                        title="previous chapter">Lightweight and efficient Fasta reader.</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="test_mock.html"
+                        title="next chapter">Test with mock</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/subprocess.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="test_mock.html" title="Test with mock"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="fasta_reader.html" title="Lightweight and efficient Fasta reader."
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">The Pythonic Way</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        <div id="copyright">
+            &#169; Copyright 2017, freeh4cker. &nbsp; &nbsp;
+           <br />
+           <br />
+           Last updated on May 10, 2017. &nbsp; &nbsp;
+        </div>
+        <div id="show_sphinx">
+           Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2. &nbsp; &nbsp;
+        </div>
+        <div id="license">
+		     This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">
+		         <img alt="Creative Commons License"
+                      style="border-width:0; vertical-align:top"
+                      src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" />
+		         </a>
+        </div>
+    </div>
+  </body>
+</html>

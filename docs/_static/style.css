@@ -1,0 +1,80 @@
+@import url("classic.css"); /* make sure to sync this with the base theme's css filename */
+
+
+table.docutils {
+    border: 1px solid;
+    border-collapse: collapse;
+}
+
+table.docutils td, table.docutils th {
+    border-color: -moz-use-text-color -moz-use-text-color #aaa;
+    border-style: solid;
+    border-width: 1px;
+    padding: 1px 8px 1px 5px;
+}
+#references table.citation {
+	border-style: none;
+}
+
+#references table.citation td, #references table.citation th{
+    border-style: none;
+}
+
+
+div.important {
+    background-color: #fee;
+    border: 1px solid #fcc;
+}
+
+p.admonition-title + p {
+    display: block !important;
+}
+
+
+.red-font {
+    color:red;
+}
+
+
+.highlight-text .highlight .hll {
+    background-color: #FF6666;
+}
+
+#copyright, #last_updated, #show_sphinx, #license {
+    float:left;
+    width:32%;
+}
+#show_sphinx {
+    padding-bottom: 1em;
+}
+#copyright, #last_updated {
+    padding-left: 1em;
+    text-align: left;
+}
+#license {
+    text-align: right;
+}
+
+#zen-of-python {
+    margin: 5em;
+    border: 1px dashed #2f6fab;
+    background-color: #f5fffa;
+    margin: auto;
+    width: 50%;
+    }
+#zen-of-python h1{
+    font-weight: bold;
+    font-size: 1.5em;
+    text-align: center;
+    border: none;
+    margin: inherit;
+    background-color: inherit;
+}
+
+#zen-of-python ul {
+  list-style-type: none;
+}
+
+#zen-of-python a {
+    text-align: center;
+}

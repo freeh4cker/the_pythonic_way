@@ -1,0 +1,666 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Closures &#8212; The Pythonic Way</title>
+    
+    <link rel="stylesheet" href="_static/style.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Decorators" href="decorators.html" />
+    <link rel="prev" title="Fundamentals of python" href="fundamentals.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="decorators.html" title="Decorators"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="fundamentals.html" title="Fundamentals of python"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">The Pythonic Way</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="closures">
+<span id="closure"></span><h1>Closures<a class="headerlink" href="#closures" title="Permalink to this headline">¶</a></h1>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p>To understand this course you must master the concepts of mutable and immutable objects, references to the objects,
+scope of variables, lifetime of variables ...</p>
+<p class="last">These concepts are covered in the course <a class="reference internal" href="fundamentals.html#fundamentals"><span class="std std-ref">Fundamentals of python</span></a>.</p>
+</div>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>The concept of closures was developed in the 1960s and was first fully implemented in 1970s
+as a language feature in the Scheme programming language to support lexically scoped first-class functions.
+The use of closures is associated with functional programming languages <a class="reference internal" href="#wikipedia" id="id1">[wikipedia]</a>
+In Object Oriented Programming languages we consider that objects are data with methods attached.
+In functional programming Languages closures are functions with data attached <a class="reference internal" href="#sebastian" id="id2">[Sebastian]</a>.</p>
+<div class="container">
+<a class="reference internal image-reference" href="_images/closure1.png"><img alt="nested function namespace" class="align-left" src="_images/closure1.png" style="height: 200px;" /></a>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">foo</span><span class="p">():</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="s1">&#39;z&#39;</span>
+    <span class="k">def</span> <span class="nf">bar</span><span class="p">():</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="k">return</span> <span class="n">bar</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="container">
+In the namespace of foo there are three locals variables <em>x</em>, <em>y</em> and <em>bar</em>
+but when the execution of foo is finished the corresponding namespace disappear,
+except the return varialble to the function <em>bar</em></div>
+<div class="clearer container">
+<img alt="_images/spacer.png" src="_images/spacer.png" />
+</div>
+<div class="container">
+<a class="reference internal image-reference" href="_images/closure2.png"><img alt="nested function namespace" class="align-left" src="_images/closure2.png" style="height: 265px;" /></a>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>8</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">b</span> <span class="o">=</span> <span class="n">foo</span><span class="p">()</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="container">
+<p>In <em>b</em> function we refer to <em>x</em> and <em>y</em> variables (see line 5).</p>
+<div class="line-block">
+<div class="line">So when does the execution of <em>b</em> will work?</div>
+<div class="line">How <em>b</em> can work with variable which are not defined in any namespaces (neither local, nor global)?</div>
+</div>
+</div>
+<div class="clearer container">
+<img alt="_images/spacer.png" src="_images/spacer.png" />
+</div>
+<div class="section" id="now-closure-comes-on-stage">
+<h3>Now closure comes on stage<a class="headerlink" href="#now-closure-comes-on-stage" title="Permalink to this headline">¶</a></h3>
+<p>Although the concept of closure exists in python from version 2.2 <a class="reference internal" href="#guido-van-rossum" id="id3">[Guido_van_Rossum]</a> in python2,
+there is some limitations in there uses.
+These limitations has been overcome in python3.
+In the following examples I will try to show you how closures work python3 and
+I&#8217;ll point out the limitations in python2.</p>
+<div class="container">
+<a class="reference internal image-reference" href="_images/closure3.png"><img alt="closure" class="align-left" src="_images/closure3.png" style="height: 200px;" /></a>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">foo</span><span class="p">():</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="s1">&#39;z&#39;</span>
+    <span class="k">def</span> <span class="nf">bar</span><span class="p">():</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="k">return</span> <span class="n">bar</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="mi">5</span> <span class="n">z</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span><span class="o">.</span><span class="n">__closure__</span>
+<span class="p">(</span><span class="o">&lt;</span><span class="n">cell</span> <span class="n">at</span> <span class="mh">0x7f7ae69bf5e8</span><span class="p">:</span> <span class="nb">int</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x7f7ae68638c0</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">cell</span> <span class="n">at</span> <span class="mh">0x7f7ae68c01c8</span><span class="p">:</span> <span class="nb">str</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x7f7ae68cfae8</span><span class="o">&gt;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span><span class="o">.</span><span class="n">__closure__</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ce_contents</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="mi">5</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span><span class="o">.</span><span class="n">__code__</span><span class="o">.</span><span class="n">co_freevars</span>
+<span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>Thanks to the introspection functionality of Python, we can see how it works.
+When foo namespace disappear at the end of the function.
+Python see that bar namespace reference an element in foo.
+So instead of mark it for garbaging, it capture it in a closure.</p>
+<p>We can see line 11 that <cite>b</cite> have a closure (a tuple) with two elements, these elements reference an <cite>int</cite>
+and a <cite>string</cite> object.
+The value of this elements (cell) are <cite>5</cite> and <cite>&#8216;z&#8217;</cite>.</p>
+<p>The function capture also in the <cite>b.__code__.co_freevars</cite> the name of the variables caught in the closure
+&#8216;x&#8217; and &#8216;y&#8217;. So when the code of bar is executed the local variables are created in the local namespace.
+When the code run and execute the line 5 <em>print(x, y)</em>
+<em>x</em> and <em>y</em> have not been created in the local namespace (the declaration-assignment operator <em>=</em> is not used)
+so python lookup if a closure was created, the variables name are in __code__.co_freevars and
+their values are in <em>__closure__</em> in the same order.</p>
+</div>
+<div class="clearer container">
+<img alt="_images/spacer.png" src="_images/spacer.png" />
+</div>
+<p>As I said above a closure, is when a function reference a non-local variable of that function.
+To work the function capture these &#8220;free&#8221; variables in a &#8220;closure&#8221;.
+After the definition of the function the variables are accessible only via a reference inside the function.
+But the variables are not in the scope or namespace of the function so their lifetime
+is not the function execution lifetime but the function itself.
+So the function can keep a state between several calls.</p>
+</div>
+</div>
+<div class="section" id="several-function-can-share-the-same-closure">
+<h2>Several function can share the same closure<a class="headerlink" href="#several-function-can-share-the-same-closure" title="Permalink to this headline">¶</a></h2>
+<div class="container">
+<a class="reference internal image-reference" href="_images/closure4.png"><img alt="2 func share closure" class="align-left" src="_images/closure4.png" style="height: 300px;" /></a>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">read</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">x</span>
+    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
+        <span class="n">nonlocal</span> <span class="n">x</span>
+        <span class="n">x</span> <span class="o">+=</span> <span class="n">y</span>
+        <span class="k">return</span> <span class="n">x</span>
+    <span class="k">return</span> <span class="n">read</span><span class="p">,</span> <span class="n">write</span>
+<span class="o">&gt;&gt;&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">r</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="n">foo</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">r</span><span class="p">()</span>
+<span class="mi">3</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">r</span><span class="o">.</span><span class="n">__closure__</span>
+<span class="p">(</span><span class="o">&lt;</span><span class="n">cell</span> <span class="n">at</span> <span class="mh">0x7f8b697045e8</span><span class="p">:</span> <span class="nb">int</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x7f8b695a8880</span><span class="o">&gt;</span><span class="p">,)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">w</span><span class="o">.</span><span class="n">__closure__</span>
+<span class="p">(</span><span class="o">&lt;</span><span class="n">cell</span> <span class="n">at</span> <span class="mh">0x7f8b697045e8</span><span class="p">:</span> <span class="nb">int</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x7f8b695a8880</span><span class="o">&gt;</span><span class="p">,)</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+<p>In this example we can see that only one closure (same memory address) is made and both <cite>write</cite> and <cite>read</cite> functions reference
+this closure. So if we modify the <em>x</em> variable in the closure from the <cite>write</cite> function the <cite>read</cite> function have the
+updated value.</p>
+<p>But we can create new functions objects corresponding to <cite>read</cite> and <cite>write</cite> functions.
+These new functions will referenced a new closure (the memory address is different than <cite>r.__closure__</cite>):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">r2</span><span class="p">,</span> <span class="n">w2</span> <span class="o">=</span> <span class="n">foo</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r2</span><span class="o">.</span><span class="n">__closure__</span>
+<span class="go">(&lt;cell at 0x7f8b69605378: int object at 0x7f8b695a88c0&gt;,)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w2</span><span class="o">.</span><span class="n">__closure__</span>
+<span class="go">(&lt;cell at 0x7f8b69605378: int object at 0x7f8b695a88c0&gt;,)</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span><span class="p">()</span>
+<span class="go">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r2</span><span class="p">()</span>
+<span class="go">5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="go">8</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w2</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="go">10</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="function-referencing-global-variables-does-not-closure">
+<h2>Function referencing global variables does not closure<a class="headerlink" href="#function-referencing-global-variables-does-not-closure" title="Permalink to this headline">¶</a></h2>
+<p>A closure is made only if a function reference a variable in an enclosing namespace.
+Not if the function reference a global variable <a class="reference internal" href="#dmitrysoshnikov" id="id4">[DmitrySoshnikov]</a>.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">global_var</span> <span class="o">=</span> <span class="mi">100</span>
+
+<span class="k">def</span> <span class="nf">foo</span><span class="p">():</span>
+     <span class="k">global</span> <span class="n">global_var</span>
+     <span class="k">def</span> <span class="nf">bar</span><span class="p">():</span>
+             <span class="nb">print</span><span class="p">(</span><span class="n">global_var</span><span class="p">)</span>
+     <span class="n">global_var</span> <span class="o">=</span> <span class="mi">5</span>
+     <span class="k">return</span> <span class="n">bar</span>
+
+<span class="n">b</span> <span class="o">=</span> <span class="n">foo</span><span class="p">()</span>
+<span class="n">b</span><span class="p">()</span>
+<span class="mi">5</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">__closure__</span><span class="p">)</span>
+<span class="kc">None</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="function-without-free-variables-does-not-closure">
+<h2>Function without free variables does not closure<a class="headerlink" href="#function-without-free-variables-does-not-closure" title="Permalink to this headline">¶</a></h2>
+<p>If a function does not reference any variable in enclosing namespace, It does not create closure.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">foo</span><span class="p">():</span>
+    <span class="k">def</span> <span class="nf">bar</span><span class="p">():</span>
+         <span class="n">x</span> <span class="o">=</span> <span class="mi">3</span>
+         <span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">bar</span>
+
+<span class="n">b</span> <span class="o">=</span> <span class="n">foo</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">__closure__</span><span class="p">)</span>
+<span class="kc">None</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="a-closure-is-formed-if-there-s-most-inner-function">
+<h2>A closure is formed if there&#8217;s most inner function<a class="headerlink" href="#a-closure-is-formed-if-there-s-most-inner-function" title="Permalink to this headline">¶</a></h2>
+<p>However, if we have another inner level, then both functions save closure,
+even if some parent level doesn&#8217;t use free vars <a class="reference internal" href="#dmitrysoshnikov" id="id5">[DmitrySoshnikov]</a>.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">f1</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">f2</span><span class="p">():</span> <span class="c1"># doesn&#39;t use free vars</span>
+      <span class="k">def</span> <span class="nf">f3</span><span class="p">():</span> <span class="c1"># but &quot;f3&quot; does</span>
+          <span class="k">return</span> <span class="n">x</span>
+      <span class="k">return</span> <span class="n">f3</span>
+    <span class="k">return</span> <span class="n">f2</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="c1"># create &quot;f2&quot;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">f2</span> <span class="o">=</span> <span class="n">f1</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="n">f2</span><span class="p">)</span>
+<span class="o">&lt;</span><span class="n">function</span> <span class="n">f2</span> <span class="n">at</span> <span class="mh">0x23269b0</span><span class="o">&gt;</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="c1"># create &quot;f3&quot;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">f3</span> <span class="o">=</span> <span class="n">f2</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span> <span class="p">(</span><span class="n">f3</span><span class="p">)</span>
+<span class="o">&lt;</span><span class="n">function</span> <span class="n">f3</span> <span class="n">at</span> <span class="mh">0x2326a28</span><span class="o">&gt;</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="c1">#As we expected f3 capture &#39;&#39;x&#39;&#39; in a closure</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="n">f3</span><span class="o">.</span><span class="n">__closure__</span><span class="p">)</span>
+<span class="p">(</span><span class="o">&lt;</span><span class="n">cell</span> <span class="n">at</span> <span class="mh">0x232b8a0</span><span class="p">:</span> <span class="nb">int</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x227b0a8</span><span class="o">&gt;</span><span class="p">,)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="n">f3</span><span class="o">.</span><span class="n">__closure__</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">cell_contents</span><span class="p">)</span>
+<span class="mi">200</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="c1">#but f2 too</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">f2</span><span class="o">.</span><span class="n">__closure__</span>
+<span class="p">(</span><span class="o">&lt;</span><span class="n">cell</span> <span class="n">at</span> <span class="mh">0x232b8a0</span><span class="p">:</span> <span class="nb">int</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x227b0a8</span><span class="o">&gt;</span><span class="p">,)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">f2</span><span class="o">.</span><span class="n">__closure__</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">cell_contents</span>
+<span class="mi">200</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Python capture x in one closure and both f2 and f1 access to the same closure.
+An other example to illustrate that there is only one closure per function,
+but one closure can have several cells, each cells allow to access one object reference.</p>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">L0</span><span class="p">():</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="k">def</span> <span class="nf">L1</span><span class="p">():</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="mi">4</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;a =&quot;</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">L2</span><span class="p">():</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;a = &quot;</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;b = &quot;</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">L2</span>
+    <span class="k">return</span> <span class="n">L1</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">L1</span> <span class="o">=</span> <span class="n">L0</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">L2</span> <span class="o">=</span> <span class="n">L1</span><span class="p">()</span>
+<span class="n">a</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">L2</span><span class="p">()</span>
+<span class="n">a</span> <span class="o">=</span>  <span class="mi">3</span>
+<span class="n">b</span> <span class="o">=</span>  <span class="mi">4</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">L1</span><span class="o">.</span><span class="n">__closure__</span>
+<span class="p">(</span><span class="o">&lt;</span><span class="n">cell</span> <span class="n">at</span> <span class="mh">0x15dc868</span><span class="p">:</span> <span class="nb">int</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x152ac38</span><span class="o">&gt;</span><span class="p">,)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">L2</span><span class="o">.</span><span class="n">__closure__</span>
+<span class="p">(</span><span class="o">&lt;</span><span class="n">cell</span> <span class="n">at</span> <span class="mh">0x15dc868</span><span class="p">:</span> <span class="nb">int</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x152ac38</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">cell</span> <span class="n">at</span> <span class="mh">0x15dc948</span><span class="p">:</span> <span class="nb">int</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x152ac20</span><span class="o">&gt;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="python2-limitations">
+<h2>Python2 limitations<a class="headerlink" href="#python2-limitations" title="Permalink to this headline">¶</a></h2>
+<p>As I said in the <a class="reference internal" href="#introduction">introduction</a>, Python 2.x has limited closures.</p>
+<p>In the following example, there&#8217;s no way I can modify <cite>x</cite> inside <cite>bar</cite>
+because writing <cite>x = bla</cite> would declare a local <cite>x</cite> in <cite>bar</cite>, not assign to <cite>x</cite> of foo.
+This is a side-effect of Python&#8217;s assignment=declaration.</p>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">foo</span><span class="p">():</span>
+   <span class="n">x</span> <span class="o">=</span> <span class="mi">3</span>
+   <span class="k">def</span> <span class="nf">bar</span><span class="p">():</span>
+      <span class="k">print</span> <span class="n">x</span>
+   <span class="n">x</span> <span class="o">=</span> <span class="mi">5</span>
+   <span class="k">return</span> <span class="n">bar</span>
+
+<span class="n">bar</span> <span class="o">=</span> <span class="n">foo</span><span class="p">()</span>
+<span class="n">bar</span><span class="p">()</span>
+</pre></div>
+</td></tr></table></div>
+<p>On the following example, As we saw in <a class="reference internal" href="fundamentals.html#fundamentals"><span class="std std-ref">Fundamentals of python</span></a>
+at <em>line 4</em> python creates a new reference object in the <cite>bar</cite> namespace
+which mask the <cite>x</cite> reference object in the enclosing namespace.
+Then python does not create closure (l14 &amp; 15).</p>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">foo</span><span class="p">():</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="k">def</span> <span class="nf">bar</span><span class="p">():</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="mi">5</span>
+        <span class="k">print</span> <span class="n">x</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="mi">7</span>
+    <span class="k">print</span> <span class="n">x</span>
+    <span class="k">return</span> <span class="n">bar</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">bar</span> <span class="o">=</span> <span class="n">foo</span><span class="p">()</span>
+<span class="mi">7</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">bar</span><span class="p">()</span>
+<span class="mi">5</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span> <span class="n">bar</span><span class="o">.</span><span class="n">func_closure</span>
+<span class="bp">None</span>
+</pre></div>
+</td></tr></table></div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">the attribute <cite>__closure__</cite> works only in Python3.
+To access to the closure in Python2 use the function property <cite>func_closure</cite>.</p>
+</div>
+<p>For the same reason we cannot modify the value of <cite>x</cite> as ut is a non mutable object.
+Python create a new local reference x on the left of the statement but we try
+to use it in the right part of the assignment so Python raise an error.</p>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">foo</span><span class="p">():</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="k">def</span> <span class="nf">bar</span><span class="p">():</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">5</span>
+        <span class="k">print</span> <span class="n">x</span>
+    <span class="k">return</span> <span class="n">bar</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span> <span class="o">=</span> <span class="n">foo</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span><span class="p">()</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+  <span class="n">File</span> <span class="s2">&quot;&lt;stdin&gt;&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+  <span class="n">File</span> <span class="s2">&quot;&lt;stdin&gt;&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">4</span><span class="p">,</span> <span class="ow">in</span> <span class="n">bar</span>
+<span class="ne">UnboundLocalError</span><span class="p">:</span> <span class="n">local</span> <span class="n">variable</span> <span class="s1">&#39;x&#39;</span> <span class="n">referenced</span> <span class="n">before</span> <span class="n">assignment</span>
+</pre></div>
+</td></tr></table></div>
+<p>So in python2 there is no way to modify an non mutable object inside a closure.
+We can only read it. But we can modify a mutable object.</p>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">foo</span><span class="p">():</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">def</span> <span class="nf">bar</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span>
+    <span class="k">return</span> <span class="n">bar</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span> <span class="o">=</span> <span class="n">foo</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span><span class="o">.</span><span class="n">func_closure</span>
+<span class="p">(</span><span class="o">&lt;</span><span class="n">cell</span> <span class="n">at</span> <span class="mh">0x10bf8d8</span><span class="p">:</span> <span class="nb">list</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x10a5518</span><span class="o">&gt;</span><span class="p">,)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span><span class="o">.</span><span class="n">func_closure</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">cell_contents</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+<span class="o">&gt;&gt;&gt;</span>
+</pre></div>
+</td></tr></table></div>
+<div class="admonition important">
+<p class="first admonition-title">Important</p>
+<p class="last">This limitation is overcome in python3 with the new keyword <cite>nonlocal</cite>.
+This keyword indicate to python that this variable is in the enclosing namespace
+and it shall not create local variable when <cite>&#8216;=&#8217;</cite> operator is used.
+In this case, Python just do an assignment not a variable creation.</p>
+</div>
+</div>
+<div class="section" id="when-and-why-using-closures">
+<h2>When and why using closures<a class="headerlink" href="#when-and-why-using-closures" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="with-a-global-variable">
+<h3>With a global variable<a class="headerlink" href="#with-a-global-variable" title="Permalink to this headline">¶</a></h3>
+<p>We can use closure each time we need to have a function which keep a state.
+This avoid to use the global namespace to store a state.
+It&#8217; always a <strong>bad</strong> idea to have global variable (risk of side effect) and it&#8217;s limited to instance:
+I need to have a counter each time I call the function I increment the counter.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">_global_count</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="k">def</span> <span class="nf">counter</span><span class="p">():</span>
+    <span class="k">global</span> <span class="n">_global_count</span>
+    <span class="n">_global_count</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">_global_count</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">counter</span><span class="p">()</span>
+<span class="mi">1</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">counter</span><span class="p">()</span>
+<span class="mi">2</span>
+<span class="o">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<ol class="arabic simple">
+<li>It&#8217;s dangerous to use a global variable anybody can access to the <em>global</em> count.</li>
+<li>We can have only one counter.</li>
+</ol>
+</div>
+<div class="section" id="with-a-closure">
+<h3>With a closure<a class="headerlink" href="#with-a-closure" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">make_counter</span><span class="p">():</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">def</span> <span class="nf">counter</span><span class="p">():</span> <span class="c1"># counter() is a closure</span>
+        <span class="k">nonlocal</span> <span class="n">i</span>
+        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">i</span>
+    <span class="k">return</span> <span class="n">counter</span>
+
+<span class="n">c1</span> <span class="o">=</span> <span class="n">make_counter</span><span class="p">()</span>
+<span class="n">c2</span> <span class="o">=</span> <span class="n">make_counter</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">c1</span><span class="p">(),</span> <span class="n">c1</span><span class="p">(),</span> <span class="n">c2</span><span class="p">(),</span> <span class="n">c2</span><span class="p">())</span>
+<span class="mi">1</span> <span class="mi">2</span> <span class="mi">1</span> <span class="mi">2</span>
+</pre></div>
+</div>
+<ol class="arabic simple">
+<li>The state of the counter can be access only by the function counter. So it is protected from an illegitimate access.</li>
+<li>As the data are enclosed, we can have several counter at the same time.</li>
+</ol>
+</div>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<table class="docutils citation" frame="void" id="wikipedia" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[wikipedia]</a></td><td><a class="reference external" href="http://en.wikipedia.org/wiki/Closure_(computer_science)#State_representation">http://en.wikipedia.org/wiki/Closure_(computer_science)#State_representation</a></td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="sebastian" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[Sebastian]</a></td><td><a class="reference external" href="http://stackoverflow.com/questions/13857/can-you-explain-closures-as-they-relate-to-python">http://stackoverflow.com/questions/13857/can-you-explain-closures-as-they-relate-to-python</a></td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="guido-van-rossum" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id3">[Guido_van_Rossum]</a></td><td><a class="reference external" href="http://python-history.blogspot.fr/2009/04/origins-of-pythons-functional-features.html">http://python-history.blogspot.fr/2009/04/origins-of-pythons-functional-features.html</a></td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="dmitrysoshnikov" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[DmitrySoshnikov]</td><td><em>(<a class="fn-backref" href="#id4">1</a>, <a class="fn-backref" href="#id5">2</a>)</em> 4.0 4.1 <a class="reference external" href="https://gist.github.com/DmitrySoshnikov/700292">https://gist.github.com/DmitrySoshnikov/700292</a></td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="authorship">
+<h2>Authorship<a class="headerlink" href="#authorship" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Authors:</th><td class="field-body">freeh4cker &lt;freeh4cker (at) gmail.com&gt;</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Date:</th><td class="field-body">May 10, 2017</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Closures</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a><ul>
+<li><a class="reference internal" href="#now-closure-comes-on-stage">Now closure comes on stage</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#several-function-can-share-the-same-closure">Several function can share the same closure</a></li>
+<li><a class="reference internal" href="#function-referencing-global-variables-does-not-closure">Function referencing global variables does not closure</a></li>
+<li><a class="reference internal" href="#function-without-free-variables-does-not-closure">Function without free variables does not closure</a></li>
+<li><a class="reference internal" href="#a-closure-is-formed-if-there-s-most-inner-function">A closure is formed if there&#8217;s most inner function</a></li>
+<li><a class="reference internal" href="#python2-limitations">Python2 limitations</a></li>
+<li><a class="reference internal" href="#when-and-why-using-closures">When and why using closures</a><ul>
+<li><a class="reference internal" href="#with-a-global-variable">With a global variable</a></li>
+<li><a class="reference internal" href="#with-a-closure">With a closure</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#references">References</a></li>
+<li><a class="reference internal" href="#authorship">Authorship</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="fundamentals.html"
+                        title="previous chapter">Fundamentals of python</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="decorators.html"
+                        title="next chapter">Decorators</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/closure.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="decorators.html" title="Decorators"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="fundamentals.html" title="Fundamentals of python"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">The Pythonic Way</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        <div id="copyright">
+            &#169; Copyright 2017, freeh4cker. &nbsp; &nbsp;
+           <br />
+           <br />
+           Last updated on May 10, 2017. &nbsp; &nbsp;
+        </div>
+        <div id="show_sphinx">
+           Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2. &nbsp; &nbsp;
+        </div>
+        <div id="license">
+		     This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">
+		         <img alt="Creative Commons License"
+                      style="border-width:0; vertical-align:top"
+                      src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" />
+		         </a>
+        </div>
+    </div>
+  </body>
+</html>
