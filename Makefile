@@ -59,6 +59,13 @@ html:
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)."
 
+publish:
+	git add docs/
+	git commit -m "publish new contents"
+	git push
+	@echo
+	@echo "The content of docs/  has been published, see https://freeh4cker.github.io/the_pythonic_way/"
+
 dirhtml:
 	$(SPHINXBUILD) -b dirhtml $(ALLSPHINXOPTS) $(BUILDDIR)/dirhtml
 	@echo
