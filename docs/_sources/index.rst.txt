@@ -48,7 +48,7 @@ Welcome to The Pythonic Way
 Courses:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    fundamentals
    closure
@@ -57,7 +57,7 @@ Courses:
 Coock book:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    fasta_reader
    subprocess

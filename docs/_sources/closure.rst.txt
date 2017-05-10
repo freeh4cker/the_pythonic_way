@@ -70,15 +70,15 @@ In functional programming Languages closures are functions with data attached [S
    In *b* function we refer to *x* and *y* variables (see line 5).
 
    | So when does the execution of *b* will work?
-   | How *b* can work with variable which are not defined in any namespaces (neither local, nor global)?
+   | How *b* can work with variables used which are not defined in any namespaces (neither local, nor global)?
 
 .. container:: clearer
 
    .. image :: _static/figs/spacer.png
 
 
-Now closure comes on stage
---------------------------
+Now closures comes on stage
+---------------------------
 
 
 Although the concept of closure exists in python from version 2.2 [Guido_van_Rossum]_ in python2,
