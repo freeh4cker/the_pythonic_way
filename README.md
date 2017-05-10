@@ -13,14 +13,15 @@ The result is under http://creativecommons.org/licenses/by-nc-sa/4.0/
 If you are interested to contribute to this web site, fork this project and submit a pull request.
 
 I use sphinx to generate html (in a directory named *docs*) and use github pages functionality
-to publish the content of docs directory (in master branch) as web site (see
+to publish the content of *docs* directory (in master branch) as web site (see
 [project pages](https://help.github.com/articles/user-organization-and-project-pages/) ).
 
-To contribute, fix bugs (typos, error),
+To contribute, fix bugs (typos, error), create new pages
 
- 1. install sphinx
- 2. fork the project
- 3. create new page or fix a page
- 4. check the result locally
- 5. ask for a pull request on the source code, not on the generate html :-)
+ 1. install (sphinx)[http://www.sphinx-doc.org/].
+ 2. fork the project.
+ 3. create a new branch.
+ 3. create new page or fix an existing one.
+ 4. check the result locally (make html)
+ 5. ask for a pull request on the source code, not on the generated html (do not commit anything in docs directory).
 
