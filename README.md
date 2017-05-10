@@ -25,7 +25,7 @@ To contribute, fix bugs (typos, error), create new pages
  4. check the result locally (make html)
  5. ask for a pull request on the source code, not on the generated html (do not commit anything in docs directory).
 
-Project Structure
+# Project Structure
 
 * docs -- The html generate by sphinx. The content of this directory is pushed publish on github pages
 * doctrees -- Generate by sphinx not directly used
