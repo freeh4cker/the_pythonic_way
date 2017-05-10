@@ -18,9 +18,9 @@ to publish the content of docs directory (in master branch) as web site (see
 
 To contribute, fix bugs (typos, error),
 
- #. install sphinx
- #. fork the project
- #. create new page or fix a page
- #. check the result locally
- #. ask for a pull request on the source code, not on the generate html :-)
+ 1. install sphinx
+ 2. fork the project
+ 3. create new page or fix a page
+ 4. check the result locally
+ 5. ask for a pull request on the source code, not on the generate html :-)
 
