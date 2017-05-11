@@ -54,6 +54,801 @@
             
   <div class="section" id="fundamentals-of-python">
 <span id="fundamentals"></span><h1>Fundamentals of python<a class="headerlink" href="#fundamentals-of-python" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="variables-vs-object-references">
+<h2>Variables vs object references<a class="headerlink" href="#variables-vs-object-references" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="value-and-type">
+<h3>Value and type<a class="headerlink" href="#value-and-type" title="Permalink to this headline">¶</a></h3>
+<p>A <strong>value</strong> is one of the basic things a program works with, like a letter or a number.
+The values we have seen so far are <code class="docutils literal"><span class="pre">1</span></code>, <code class="docutils literal"><span class="pre">2</span></code>, and <code class="docutils literal"><span class="pre">'Hello,</span> <span class="pre">World!'</span></code>.</p>
+<p>These values belong to different <strong>types</strong>: <code class="docutils literal"><span class="pre">2</span></code> is an integer (<a class="reference external" href="https://docs.python.org/2/reference/lexical_analysis.html#integers" title="(in Python v2.7)"><span>Integer and long integer literals</span></a>), and <code class="docutils literal"><span class="pre">'Hello,</span> <span class="pre">World!'</span></code> is a <strong>string</strong> (<a class="reference external" href="https://docs.python.org/2/reference/lexical_analysis.html#strings" title="(in Python v2.7)"><span>String literals</span></a>),
+so-called because it contains a &#8220;string&#8221; of letters. You (and the interpreter) can identify
+strings because they are enclosed in quotation marks. We speak speak also of <code class="docutils literal"><span class="pre">data</span> <span class="pre">type</span></code>.</p>
+<p>If you are not sure what type a value has, the interpreter can tell you.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="s1">&#39;Hello, World!&#39;</span><span class="p">)</span>
+<span class="go">&lt;type &#39;str&#39;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span>
+<span class="go">&lt;type &#39;int&#39;&gt;</span>
+</pre></div>
+</div>
+<p>Not surprisingly, strings belong to the type <code class="docutils literal"><span class="pre">str</span></code> and integers belong to the type <code class="docutils literal"><span class="pre">int</span></code>.
+Less obviously, numbers with a decimal point belong to a type called <code class="docutils literal"><span class="pre">float</span></code>,
+because these numbers are represented in a format called <code class="docutils literal"><span class="pre">floating</span> <span class="pre">point</span></code>.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="mf">3.2</span><span class="p">)</span>
+<span class="go">&lt;type &#39;float&#39;&gt;</span>
+</pre></div>
+</div>
+<p>What about values like <code class="docutils literal"><span class="pre">'17'</span></code> and <code class="docutils literal"><span class="pre">'3.2'</span></code>?
+They look like numbers, but they are in quotation marks like strings.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="s1">&#39;17&#39;</span><span class="p">)</span>
+<span class="go">&lt;type &#39;str&#39;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="s1">&#39;3.2&#39;</span><span class="p">)</span>
+<span class="go">&lt;type &#39;str&#39;&gt;</span>
+</pre></div>
+</div>
+<p>They&#8217;re strings.</p>
+<p>When you type a large integer, you might be tempted to use commas or space
+between groups of three digits, as in <code class="docutils literal"><span class="pre">1,000,000</span></code>.
+This is not a legal integer in Python, but it is legal:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="mi">1</span><span class="p">,</span><span class="mi">000</span><span class="p">,</span><span class="mi">000</span>
+<span class="go">(1, 0, 0)</span>
+</pre></div>
+</div>
+<p>Well, that&#8217;s not what we expected at all!  Python interprets <code class="docutils literal"><span class="pre">1,000,000</span></code>
+as a comma-separated sequence of integers.
+This is the first example of a semantic error: the code
+runs without producing an error message, but it doesn&#8217;t do the <code class="docutils literal"><span class="pre">right</span></code> thing.</p>
+<p>In Python, both <code class="docutils literal"><span class="pre">str</span></code> and <code class="docutils literal"><span class="pre">int</span></code> are immutable. That is once set their value cannot be changed anymore.
+there exist some datatype which are mutable (we will see what this difference implies between this to kind
+of datatype in <a class="reference internal" href="#mutable-objects">Mutable objects</a> and <a class="reference internal" href="#immutable-objects">Immutable objects</a>)</p>
+<p>To convert a data item from one type to another, we can use the syntax <em>datatype(item)</em>. For example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">int</span><span class="p">(</span><span class="s2">&quot;45&quot;</span><span class="p">)</span>
+<span class="go">45</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="mi">45</span><span class="p">)</span>
+<span class="go">&#39;45&#39;</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal"><span class="pre">int</span></code> conversion is tolerant of leading and trailing whitespace. So int(&#8221; 45 &#8221;) would have worked just as well.
+The <code class="docutils literal"><span class="pre">str</span></code> conversion can be applied to almost data item.
+If a conversion fails, an exception is raised (we will see fully <a class="reference external" href="https://docs.python.org/2/reference/executionmodel.html#exceptions" title="(in Python v2.7)"><span>Exceptions</span></a> later).</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">int</span><span class="p">(</span><span class="s1">&#39;Hello World!&#39;</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="gr">   File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;</span>
+<span class="gr">ValueError</span>: <span class="n">invalid literal for int() with base 10: &#39;Hello World!&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="variables-and-object-references">
+<h3>Variables and Object references<a class="headerlink" href="#variables-and-object-references" title="Permalink to this headline">¶</a></h3>
+<p>Once we have data item (or values), the next thing we need is variables in which to store them.
+A variable is a name that refers to a value.
+One of the most powerful features of a programming language is the ability to manipulate <code class="docutils literal"><span class="pre">variables</span></code>.</p>
+<p>As I mentioned earlier, in Python everything is an object, even int or string.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="nb">object</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="nb">object</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>So Python does not have variable as such, but instead has <code class="docutils literal"><span class="pre">object</span> <span class="pre">references</span></code>. When it comes to immutable objects
+like <code class="docutils literal"><span class="pre">str</span></code> or <code class="docutils literal"><span class="pre">int</span></code>, there is no discernible difference between variable and an object reference.
+As for mutable objects there is a difference, but it rarely maters in practice. So we will use the terms of <code class="docutils literal"><span class="pre">variable</span></code>
+or <code class="docutils literal"><span class="pre">object</span> <span class="pre">reference</span></code> interchangeably.</p>
+<p>Let&#8217;s look at few examples and see what&#8217;s happen in details:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;green&#39;</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">color</span>
+</pre></div>
+</div>
+<p>The syntax is simply <code class="docutils literal"><span class="pre">object</span> <span class="pre">reference</span> <span class="pre">=</span> <span class="pre">value</span></code>. There is no need of pre-declaration
+and no need to specify the value&#8217;s type. When Python execute</p>
+<ul class="simple">
+<li>the first statement it creates a <code class="docutils literal"><span class="pre">int</span></code> object with the value <code class="docutils literal"><span class="pre">3</span></code> and create the object reference call <code class="docutils literal"><span class="pre">x</span></code> that refer to
+the int object. For all practical purpose we say <code class="docutils literal"><span class="pre">that</span> <span class="pre">variable</span> <span class="pre">x</span> <span class="pre">has</span> <span class="pre">been</span> <span class="pre">assigned</span> <span class="pre">the</span> <span class="pre">&quot;3&quot;</span> <span class="pre">integer</span></code>.</li>
+<li>The second statement is similar.</li>
+<li>The third creates a new object reference y and sets it to refer to the same object
+that the color reference object refers to (in this case the str object containing the value &#8220;green&#8221;).</li>
+</ul>
+<p>Let&#8217;s see what python do behind the scene:</p>
+<div class="align-left figure">
+<img alt="object references" src="_images/ref_obj.png" />
+</div>
+<div class="line-block">
+<div class="line"><em>The circles represents the object references.</em></div>
+<div class="line"><em>The rectangles the objects in memory.</em></div>
+</div>
+<ul>
+<li><p class="first">The <code class="docutils literal"><span class="pre">=</span></code> operator is not the same as the variable assignment operator in some other languages.</p>
+</li>
+<li><p class="first">The <code class="docutils literal"><span class="pre">=</span></code> operator binds an object in memory to an object reference.</p>
+<blockquote>
+<div><ul class="simple">
+<li>If the object reference already exists it simply re-bound to refer to the object on the right of = operator;</li>
+<li>If the reference does not exist, it simply created by the = operator.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+<div class="clearer container">
+<img alt="_images/spacer.png" src="_images/spacer.png" />
+</div>
+<p>Let us continue with the previous example and do some rebinding.</p>
+<a class="reference internal image-reference" href="_images/rebinding.png"><img alt="object references rebinding" class="align-left" src="_images/rebinding.png" style="width: 250px;" /></a>
+<p></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">x</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">y</span>  <span class="c1">#in python3 syntax or print_function import &gt;&gt;&gt; print(x, color, y)</span>
+<span class="go">3 green green</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">y</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">x</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">y</span>
+<span class="go">green green green</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">comments begin with a <code class="docutils literal"><span class="pre">#</span></code> and continue until the end of the line</p>
+</div>
+<div class="line-block">
+<div class="line">Now the three objects references are referring to the same string with value &#8220;green&#8221;.</div>
+<div class="line">Since there are no more object references to the int <code class="docutils literal"><span class="pre">3</span></code> Python is free to garbage it.</div>
+</div>
+<p>Python uses <em>dynamic typing</em>, which means that an object reference can be rebound to refer
+to a different object (which may be a different data type) at any time.</p>
+<div class="clearer container">
+<img alt="_images/spacer.png" src="_images/spacer.png" />
+</div>
+</div>
+</div>
+<div class="section" id="immutable-objects">
+<span id="immutable-obj"></span><h2>Immutable objects<a class="headerlink" href="#immutable-objects" title="Permalink to this headline">¶</a></h2>
+<p>As I mentioned in previous paragraph immutable objects are objects that we <strong>cannot</strong> change
+the state (the value). We can rebind the reference which was refer to an immutable object
+to a <strong>new</strong> object with an other value, but we cannot change the value of the object itself.
+We already seen immutable objects, int, str. There is a lot of other data types which are
+immutable .</p>
+</div>
+<div class="section" id="mutable-objects">
+<span id="mutable-obj"></span><h2>Mutable objects<a class="headerlink" href="#mutable-objects" title="Permalink to this headline">¶</a></h2>
+<img alt="object references of mutable objects" class="align-left" src="_images/ref_obj_mutable.png" />
+<p>By contrast to the immutable objects, the mutable object are object that we can modify the state (the value).
+One example of immutable object is the <code class="docutils literal"><span class="pre">list</span></code>.
+A list is an object to hold a collection of data items. In the list the items are ordered.
+We can easily insert, remove, items whenever we want.</p>
+<p>Under the hood, the lists do not store data items at all, but rather object references.
+When lists are created and when items are inserted, they take copies of the object references they are given.</p>
+<div class="clearer container">
+<img alt="_images/spacer.png" src="_images/spacer.png" />
+</div>
+<div class="line-block">
+<div class="line">On the figure we see the creation of a list with a reference x on it. This list contains 3 strings &#8216;a&#8217;, &#8216;b&#8217;,&#8217;c&#8217;.</div>
+<div class="line">The list does not contains the 3 string objects directly, but the references toward their respective objects.</div>
+<div class="line">We can easily change the state of the list, by rebinding the second element of it to the integer object newly created.</div>
+<div class="line">The string &#8216;b&#8217; has no reference any longer that point on it, then Python is free to garbage it.</div>
+</div>
+</div>
+<div class="section" id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="functions-are-objects">
+<h3>Functions are objects<a class="headerlink" href="#functions-are-objects" title="Permalink to this headline">¶</a></h3>
+<p>Functions are a way to package functionalities. There are 4 kind of functions in Python:</p>
+<ul class="simple">
+<li>global functions</li>
+<li>local functions</li>
+<li>lambda functions</li>
+<li>methods</li>
+</ul>
+<p><em>Global</em> functions are created with the keyword <em>def</em> and take a name and an optional list of parameters.
+They are accessible to any code in the same module in which it is created.
+They can also be accessible from other modules with a mechanism of import.</p>
+<p><em>Local</em> are created as globals functions but defined inside other functions (also called <em>nested</em> functions).
+These functions are visible only to the function where they are defined.</p>
+<p><em>Lambda</em> functions are expressions, so they can be created at their point of use.
+however they are much more limited than normal functions.</p>
+<p><em>Methods</em> are functions that are bound to a particular data type and can be used only in conjunction with this data type.</p>
+<p>global functions, local functions and method are created with the keyword def and return a value.
+To return a value we explicitly use the keyword <code class="docutils literal"><span class="pre">return</span></code> if we do not do that <code class="docutils literal"><span class="pre">None</span></code> is return automatically by python.
+We can leave a function at any point by using the <code class="docutils literal"><span class="pre">return</span></code> statement (the yield can be used also but will not cover here).
+We can call functions by appending parenthesis to the function name.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">global_func</span><span class="p">():</span>
+<span class="go">      return &quot;global_func is a global function&quot;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">global_func</span><span class="p">()</span>
+<span class="go">   &quot;global_func is a global function&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="nested-functions">
+<h3>Nested functions<a class="headerlink" href="#nested-functions" title="Permalink to this headline">¶</a></h3>
+<p>It is useful to have helper function inside a function.
+To do this we simply define a function inside the definition of an existing function.
+Such function are often called <em>nested</em> functions or <em>locals</em> functions.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">outer</span><span class="p">():</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">def</span> <span class="nf">inner</span><span class="p">():</span>
+        <span class="k">return</span> <span class="mi">2</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="n">inner</span><span class="p">()</span>
+
+<span class="n">outer</span><span class="p">()</span>
+<span class="mi">3</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="function-argument-vs-parameters">
+<h3>Function argument vs parameters<a class="headerlink" href="#function-argument-vs-parameters" title="Permalink to this headline">¶</a></h3>
+<p>These two terms <em>parameter</em> and <em>argument</em> are sometimes loosely used interchangeably,
+and the context is used to distinguish the meaning.
+The term <em>parameter</em> (sometimes called <em>formal parameter</em>) is often used to refer to the variable as
+found in the function definition,
+while <em>argument</em> (sometimes called <em>actual parameter</em>) refers to the actual value passed.
+To avoid confusion, it is common to view a parameter as a variable, and an argument as a value.
+Python allow us to pass arguments to functions.
+The parameter names become local variable of our function <a class="reference internal" href="#parameters-and-arguments" id="id1">[parameters_and_arguments]</a>.
+If there is more parameters than one, they are written as a sequence of comma separated identifiers,
+or as sequence of identifier = value pair.
+For instance, here is a function that calculates the area of a triangle using Heron&#8217;s formula:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">heron</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+   <span class="n">s</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span> <span class="o">+</span> <span class="n">c</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+   <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">s</span> <span class="o">*</span> <span class="p">(</span><span class="n">s</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">s</span> <span class="o">-</span> <span class="n">b</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">s</span> <span class="o">-</span> <span class="n">c</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Inside the function each parameter, <em>a</em>, <em>b</em>, <em>c</em>, is initialized with the corresponding value
+that was passed as an argument.
+When the function is called, we must supply all arguments, for example, heron(3, 4, 5).
+If we give too few or too many arguments, a <code class="docutils literal"><span class="pre">TypeError</span> <span class="pre">exception</span></code> will be raised.</p>
+<p>When we do a call like this we said to be using a positional arguments,
+because each argument passed is set as the value of parameter in the corresponding position.
+So in this case, <em>a</em> is set to 3, <em>b</em> to 4, and <em>c</em> to 5, when the function is called.</p>
+<p>Some functions have parameters for which there can be sensible default.</p>
+</div>
+<div class="section" id="argument-and-parameter-unpacking">
+<span id="arguments-n-parameters"></span><h3>Argument and Parameter unpacking<a class="headerlink" href="#argument-and-parameter-unpacking" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="arguments-and-parameters">
+<h3>Arguments and Parameters<a class="headerlink" href="#arguments-and-parameters" title="Permalink to this headline">¶</a></h3>
+<p>Python has different ways to define function parameters and pass arguments to them. Function parameters can be either</p>
+<ul class="simple">
+<li>positional parameters that are mandatory or named,</li>
+<li>keyword parameters that provide a default value.</li>
+</ul>
+<p>The parameter syntax does not permit us to follow parameters with default value with parameters that don&#8217;t have default value.
+So def bad(a, b = 1, c) wont work.
+We are not force to pass our arguments in the order they appear in the function&#8217;s definition, instead,
+we can use keyword arguments, passing each argument in the form name = value.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">argument</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="mi">4</span><span class="p">):</span>
+   <span class="nb">print</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">d</span><span class="p">)</span>
+
+<span class="n">argument</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span> <span class="mi">4</span>
+
+<span class="n">argument</span><span class="p">(</span><span class="n">a</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span>
+<span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span> <span class="mi">4</span>
+
+<span class="n">argument</span><span class="p">(</span><span class="n">b</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+<span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span> <span class="mi">4</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p>When default values are given they are created at the time of the <em>def</em> statement is executed (i.e. when the function is created),
+<strong>not</strong> when the function is called. For immutable arguments like numbers or strings this doesn&#8217;t make any difference,
+but for mutable arguments a subtle trap is lurking.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">app</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">lst</span> <span class="o">=</span> <span class="p">[]):</span>
+    <span class="c1">#id print the memory adress of the object</span>
+    <span class="nb">print</span><span class="p">(</span> <span class="nb">id</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span> <span class="p">)</span>
+    <span class="n">lst</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">lst</span>
+
+<span class="c1">#the default value of the function app is an empty list</span>
+<span class="n">app</span><span class="o">.</span><span class="n">func_defaults</span>
+ <span class="p">([],)</span>
+
+
+<span class="n">app</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+ <span class="c1">#the memory adress of lst is 21665048</span>
+ <span class="mi">21665048</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="n">app</span><span class="o">.</span><span class="n">func_defaults</span>
+<span class="p">([</span><span class="mi">1</span><span class="p">],)</span>
+<span class="c1"># now the default value of the app function is list [1]</span>
+<span class="c1"># the first call to app have a side effect</span>
+
+<span class="n">app</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+ <span class="c1"># the memory adress does not change (this is the same object than at the first call</span>
+ <span class="c1"># the list was created at app function create time.</span>
+ <span class="mi">21665048</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+
+<span class="n">app</span><span class="o">.</span><span class="n">func_defaults</span>
+<span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],)</span>
+</pre></div>
+</div>
+<p>Here at the list lst was created at function creation time,
+at each call Python reuse the same list to add new element.
+This induce a big and dangerous side effect, and usually it&#8217;s not the desired behavior.
+Here a new version without side effect:</p>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">app</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">lst</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+   <span class="k">if</span> <span class="n">lst</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+     <span class="n">lst</span> <span class="o">=</span> <span class="p">[]</span>
+   <span class="c1">#id print the memory adress of the object</span>
+   <span class="nb">print</span><span class="p">(</span> <span class="nb">id</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span> <span class="p">)</span>
+   <span class="n">lst</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+   <span class="k">return</span> <span class="n">lst</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="variable-number-of-parameters">
+<h4>Variable number of parameters<a class="headerlink" href="#variable-number-of-parameters" title="Permalink to this headline">¶</a></h4>
+<p>A function can take additional optional arguments by prefixing the last parameter with an * (asterix). Optional
+arguments are then available in the tuple referenced by this parameter.
+Optional variables can also by passed as keywords, if the last parameter is preceded by **. In this case, the
+optional variables are available within the function as a dictionary.
+The operation consisting to get the arguments passed as sequence is call <em>argument unpacking</em>.
+Let look how it work, especially there are significant differences between python 2 and 3.</p>
+</div>
+<div class="section" id="sequence-unpacking">
+<h4>Sequence unpacking<a class="headerlink" href="#sequence-unpacking" title="Permalink to this headline">¶</a></h4>
+<table border="1" class="docutils" id="id7">
+<caption><span class="caption-text">difference between python 2 and 3 to unpack a sequence</span><a class="headerlink" href="#id7" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col width="33%" />
+<col width="67%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Python2</th>
+<th class="head">Python3</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>The unpacking operator does not exist in Python 2</td>
+<td><p class="first">We can unpack any iterables (list, tuples, ...) with the operator *.
+When used with two or more variables on the left-hand side of an assignment,
+one of which is preceded by *, items are assigned to the variables,
+with all those left over assigned to the stared variables.</p>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">first</span><span class="p">,</span> <span class="o">*</span><span class="n">rest</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">first</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rest</span>
+<span class="go">[2, 3, 4]</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">first</span><span class="p">,</span> <span class="o">*</span><span class="n">mid</span><span class="p">,</span> <span class="n">last</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">first</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mid</span>
+<span class="go">[2, 3]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">last</span>
+<span class="go">4</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="argument-unpacking">
+<h4>Argument unpacking<a class="headerlink" href="#argument-unpacking" title="Permalink to this headline">¶</a></h4>
+<table border="1" class="docutils">
+<colgroup>
+<col width="63%" />
+<col width="37%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Python2</th>
+<th class="head">Python3</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td colspan="2"><p class="first">As the unpacking operator in Python3 we can use
+the sequence unpacking operator in a function&#8217;s parameter
+list (this also works well in python2 or python3).
+This useful when we want to create functions that can
+take a variable number of positional arguments. Here a product() function <a class="reference internal" href="#prog-in-python3" id="id2">[prog_in_python3]</a> .</p>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">product</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">result</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="n">result</span> <span class="o">*=</span> <span class="n">arg</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">result</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">product</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="go">24</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">product</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="go">6</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p class="first">We cannot have arguments after unpacking sequence</p>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="o">*</span><span class="n">arg</span><span class="p">,</span> <span class="n">arg2</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="go">File &quot;&lt;stdin&gt;&quot;, line 1</span>
+<span class="go">def func(*arg, arg2 = None):</span>
+<span class="go">                ^</span>
+<span class="go">SyntaxError: invalid syntax</span>
+</pre></div>
+</div>
+</td>
+<td><p class="first">Python3 support keywords arguments following positional arguments,
+even if it&#8217;s an unpacking sequence argument.</p>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">func</span><span class="p">(</span> <span class="o">*</span><span class="n">arg</span><span class="p">,</span> <span class="n">arg2</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">arg2</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">func</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span>
+<span class="go">([1, 2, 3],)</span>
+<span class="go">None</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">func</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="p">,</span> <span class="n">arg2</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
+<span class="go">([1, 2, 3],)</span>
+<span class="go">a</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td colspan="2"><p class="first">Just as we can unpack a sequence to populate a function&#8217;s positional arguments,
+we can unpack a mapping using the mapping unpacking operator ** .
+We can use ** to pass a dictionary to a argument.</p>
+<p>Here the options dictionary&#8217;s key-value pairs are unpackecd
+with each key&#8217;s value being assigned to the parameter whose name is the same as the  key.
+If the dictionnary contains a key for wich there is no corresponding parameter,
+a TypeError is raised. Any argument for which the dictionary has no corresponding item is set at this default value.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">a</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">3</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">func</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span><span class="s1">&#39;b&#39;</span><span class="p">:</span><span class="mi">5</span><span class="p">})</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span>&gt;&gt;&gt;
+&gt;&gt;&gt; func(**{&#39;a&#39;:4,&#39;c&#39;:5})
+Traceback (most recent call last):
+File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;
+TypeError: func() got an unexpected keyword argument &#39;c&#39;
+&gt;&gt;&gt;
+&gt;&gt;&gt; func(**{&#39;a&#39;:4})
+&gt;&gt;&gt;
+</pre></div>
+</div>
+<p>We can also use mapping unpacking operator with parameter.</p>
+<p>In this case, the ** operator must be the last argument.</p>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">a</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nb">print</span> <span class="n">a</span>
+<span class="gp">... </span>    <span class="nb">print</span> <span class="n">b</span>
+<span class="gp">... </span>    <span class="nb">print</span> <span class="n">kwargs</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">a</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="mi">4</span><span class="p">):</span>
+<span class="go">File &quot;&lt;stdin&gt;&quot;, line 1</span>
+<span class="go">def func(a = 2, b = 3, **kwargs, d = 4):</span>
+<span class="go">^</span>
+<span class="go">SyntaxError: invalid syntax</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="o">*</span><span class="n">arg</span><span class="p">,</span> <span class="o">**</span><span class="n">kwarg</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">kwarg</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">func</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="go">arg = (1, 2, 3)</span>
+<span class="go">kwatg = {}</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">func</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">a</span><span class="o">=</span> <span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="s1">&#39;B&#39;</span><span class="p">)</span>
+<span class="go">arg = ([1, 2, 3],)</span>
+<span class="go">kwarg = {&#39;a&#39;: &#39;A&#39;, &#39;b&#39;: &#39;B&#39;}</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">func</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span><span class="s1">&#39;B&#39;</span><span class="p">})</span>
+<span class="go">arg = ([1, 2, 3], {&#39;a&#39;: &#39;A&#39;, &#39;b&#39;: &#39;B&#39;})</span>
+<span class="go">kwarg = {}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">l</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span><span class="s1">&#39;B&#39;</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">l</span><span class="p">,</span> <span class="o">**</span><span class="n">d</span><span class="p">)</span>
+<span class="go">arg = (1, 2, 3)</span>
+<span class="go">kwarg = {&#39;a&#39;: &#39;A&#39;, &#39;b&#39;: &#39;B&#39;}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="section" id="scope-of-variables">
+<h2>Scope of variables<a class="headerlink" href="#scope-of-variables" title="Permalink to this headline">¶</a></h2>
+<p>For variables, Python has function scope, module scope, and global scope
+(in python the term of namespaces is often used) <a class="reference internal" href="#franklin" id="id3">[Franklin]</a> .
+Names enter scope at the start of a context (function, module, or globally),
+and exit scope when a non-nested function is called or the context ends.
+If a name is used prior to variable initialization, this raises a syntax error.</p>
+<div class="section" id="variable-resolution-rules">
+<span id="id4"></span><h3>Variable resolution rules<a class="headerlink" href="#variable-resolution-rules" title="Permalink to this headline">¶</a></h3>
+<p>Although scopes are determined statically, they are used dynamically.
+At any time during execution, there are at least three nested scopes whose namespaces are directly accessible:</p>
+<ol class="arabic simple">
+<li>the innermost scope, which is searched first, contains the local names</li>
+<li>the scopes of any enclosing functions, which are searched starting with the nearest enclosing scope, contains non-local, but also non-global names</li>
+<li>the next-to-last scope contains the current module’s global names</li>
+<li>the outermost scope (searched last) is the namespace containing built-in name</li>
+</ol>
+<p>If a variable is simply accessed (not assigned to) in a context,
+name resolution follows the LEGB rule (Local, Enclosing, Global, Built-in).
+However, if a variable is assigned to, it defaults to creating a local variable,
+which is in scope for the entire context. Both these rules can be overridden
+with a global or nonlocal (in Python 3) declaration prior to use,
+which allows accessing global variables even if there is an intervening nonlocal variable,
+and assigning to global or nonlocal variables <a class="reference internal" href="#scope" id="id5">[scope]</a> .</p>
+<div class="container">
+<a class="reference internal image-reference" href="_images/namespaces_1.png"><img alt="functions are object" class="align-left" src="_images/namespaces_1.png" style="height: 200px;" /></a>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">G</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">I</span> <span class="o">=</span> <span class="mi">12</span>
+<span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+   <span class="n">I</span> <span class="o">=</span> <span class="mi">5</span>
+   <span class="n">res</span> <span class="o">=</span> <span class="n">p</span> <span class="o">+</span> <span class="n">I</span> <span class="o">-</span> <span class="n">G</span>
+   <span class="k">return</span> <span class="n">res</span>
+</pre></div>
+</div>
+</div>
+<div class="container">
+We first defined 2 objects references G and I which refer respectively to integers 4 and 12
+then we create a new object reference func which refer to the function code
+(I remember you that in Python everything is an object)</div>
+<div class="clearer container">
+<img alt="_images/spacer.png" src="_images/spacer.png" />
+</div>
+<div class="container">
+<a class="reference internal image-reference" href="_images/namespaces_2.png"><img alt="functions are object" class="align-left" src="_images/namespaces_2.png" style="height: 400px;" /></a>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">y</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="container">
+<ol class="arabic">
+<li><dl class="first docutils">
+<dt>When we call the function func with argument 3, Python create a namespace local to the function,</dt>
+<dd><p class="first last">with a first reference object &#8220;p&#8221; which refer to an integer object with the value 3.</p>
+</dd>
+</dl>
+</li>
+<li><p class="first">Then the code of the function is executed, a variable &#8220;I&#8221; is assigned to, so Python creates a new local reference.</p>
+</li>
+<li><p class="first">I show with small arrows how python resolve the variables to compute the statement</p>
+</li>
+<li><p class="first">then a reference &#8220;res&#8221; is created which point to the result of the statement &#8220;p + I - G&#8221;</p>
+</li>
+</ol>
+</div>
+<div class="clearer container">
+<img alt="_images/spacer.png" src="_images/spacer.png" />
+</div>
+<a class="reference internal image-reference" href="_images/namespaces_3.png"><img alt="functions are object" class="align-left" src="_images/namespaces_3.png" style="height: 400px;" /></a>
+<div class="container">
+<ol class="arabic simple">
+<li>a new reference call &#8220;y&#8221; to the integer object 4 is created in the global namespace.</li>
+<li>the local namespace relative to the function execution is tagged to be removed by the garbage collector.
+As the int object with 4 as value have another reference (y) it will not be destroyed.</li>
+</ol>
+</div>
+<div class="clearer container">
+<img alt="_images/spacer.png" src="_images/spacer.png" />
+</div>
+<p>We can see this mechanism in action as in Python we can view the content of the local the global namespace
+via two built-in functions <em>locals</em> and <em>globals</em>
+The code below is written in Python3.</p>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16</pre></div></td><td class="code"><div class="highlight"><pre><span></span>   <span class="k">def</span> <span class="nf">outer_func</span><span class="p">():</span>
+      <span class="n">x</span> <span class="o">=</span> <span class="s1">&#39;outer&#39;</span>
+      <span class="k">print</span><span class="p">(</span><span class="s1">&#39;outer locals = &#39;</span><span class="p">,</span> <span class="nb">locals</span><span class="p">())</span>
+      <span class="k">print</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+      <span class="k">def</span> <span class="nf">inner_func</span><span class="p">():</span>
+         <span class="n">nonlocal</span> <span class="n">x</span>
+         <span class="k">print</span><span class="p">(</span><span class="s1">&#39;inner locals = &#39;</span><span class="p">,</span> <span class="nb">locals</span><span class="p">())</span>
+         <span class="n">x</span> <span class="o">=</span> <span class="s1">&#39;inner&#39;</span>
+         <span class="k">print</span><span class="p">(</span><span class="s1">&#39;inner locals = &#39;</span><span class="p">,</span> <span class="nb">locals</span><span class="p">())</span>
+         <span class="k">print</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+      <span class="n">inner_func</span><span class="p">()</span>
+      <span class="k">print</span><span class="p">(</span><span class="s1">&#39;outer locals = &#39;</span><span class="p">,</span> <span class="nb">locals</span><span class="p">())</span>
+
+   <span class="n">outer_func</span><span class="p">()</span>
+</pre></div>
+</td></tr></table></div>
+<div class="container">
+<p>This piece of code illustrate the globals and locals namespaces.
+Although this code is writen in python3 the concepts are the same in python2.
+But the keywords <code class="docutils literal"><span class="pre">nonlocals</span></code> is python3 specific.
+In python2, we can refer to a non local variable, but we cannot assign a new value to a non local variable,
+when we try to assign a new value, a new local object reference is created.</p>
+<p>when we use the <code class="docutils literal"><span class="pre">nonlocals</span></code> keywords the variable find in the outer scope is seen as it belong to the local scope.
+We can manipulate it as a local variable.
+If we reassign a new value to this reference, the outer reference is also modified.</p>
+</div>
+<a class="reference internal image-reference" href="_images/namespaces_in_python3.png"><img alt="namespaces in python 3" class="align-left" src="_images/namespaces_in_python3.png" style="height: 300px;" /></a>
+<div class="container">
+<div class="line-block">
+<div class="line">3.  outer locals = {&#8216;x&#8217;: &#8216;outer&#8217;}</div>
+<div class="line">4.  outer</div>
+<div class="line">7.  inner locals = {&#8216;x&#8217;: &#8216;outer&#8217;}</div>
+<div class="line">9.  inner locals = {&#8216;x&#8217;: &#8216;inner&#8217;}</div>
+<div class="line">10. inner</div>
+<div class="line">12. outer locals = {&#8216;x&#8217;: &#8216;inner&#8217;, &#8216;inner_func&#8217;: &lt;function outer_func.&lt;locals&gt;.inner_func at 0x7f19d8d965f0&gt;}</div>
+</div>
+</div>
+<div class="clearer container">
+<img alt="_images/spacer.png" src="_images/spacer.png" />
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p>If we consider the code below,
+Unlike what we might think in <em>y = x + 2</em> <em>x</em> is not get from the global scope..</p>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="mi">4</span>
+
+<span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+   <span class="n">y</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">2</span>
+   <span class="k">print</span> <span class="nb">locals</span><span class="p">()</span>
+   <span class="n">x</span> <span class="o">=</span> <span class="n">y</span>
+   <span class="k">return</span> <span class="n">y</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">y</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+  <span class="n">File</span> <span class="s2">&quot;&lt;stdin&gt;&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+  <span class="n">File</span> <span class="s2">&quot;&lt;stdin&gt;&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">2</span><span class="p">,</span> <span class="ow">in</span> <span class="n">func</span>
+<span class="ne">UnboundLocalError</span><span class="p">:</span> <span class="n">local</span> <span class="n">variable</span> <span class="s1">&#39;x&#39;</span> <span class="n">referenced</span> <span class="n">before</span> <span class="n">assignment</span>
+</pre></div>
+</td></tr></table></div>
+<p>As soon as you make an assignment to a variable in a scope,
+that variable becomes local to that scope and shadows any similarly named variable in the outer scope.
+even if the assignment appear later in code.
+Here <em>x = y</em> make <em>x</em> as local variable whatever you are in func.
+so at line  <em>y = x + 2</em> we try to use the local variable <em>x</em> but we have to assign it a value (it is done later) so
+Python raise an UnboundLocalError
+(<a class="reference external" href="https://docs.python.org/3/faq/programming.html#why-am-i-getting-an-unboundlocalerror-when-the-variable-has-a-value">see python faq for details</a>)</p>
+<div class="clearer last container">
+<img alt="_images/spacer.png" src="_images/spacer.png" />
+</div>
+</div>
+</div>
+<div class="section" id="variable-lifetime">
+<h3>Variable lifetime<a class="headerlink" href="#variable-lifetime" title="Permalink to this headline">¶</a></h3>
+<p>It’s also important to note that not only do variables live inside a namespace, they also have lifetimes. Consider</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">foo</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="n">x</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">foo</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">x</span> <span class="c1"># 1</span>
+<span class="gt">Traceback (most recent call last):</span>
+  <span class="c">...</span>
+<span class="gr">NameError</span>: <span class="n">name &#39;x&#39; is not defined</span>
+</pre></div>
+</div>
+<p>It isn’t just scope rules at point #1 that cause a problem (although that’s why we have a NameError)
+it also has to do with how function calls are implemented in Python and many other languages.
+There isn’t any syntax we can use to get the value of the variable x at this point - it literally doesn’t exist!
+The namespace created for our function foo is created from scratch each time the function is called
+and it is destroyed when the function ends <a class="reference internal" href="#franklin" id="id6">[Franklin]</a> .</p>
+</div>
+<div class="section" id="lambda-functions">
+<h3>Lambda functions<a class="headerlink" href="#lambda-functions" title="Permalink to this headline">¶</a></h3>
+<p>In addition the def statement, Python also provides an expression form that generates function objects.
+The lambda’s syntax is keyword <em>lambda</em>, followed by one or more arguments (exactly like the arguments list you enclose in parentheses in a def header), followed by an expression after a colon:</p>
+<div class="line-block">
+<div class="line"><strong>lambda</strong> argument1, argument2,... argumentN <strong>:</strong> expression using arguments</div>
+</div>
+<p>Function objects returned by running lambda expressions work exactly the same as those created and assigned by defs, but there are a few differences that make lambdas useful in specialized roles:</p>
+<ul>
+<li><p class="first"><code class="docutils literal"><span class="pre">lambda</span></code> is an expression, <strong>not</strong> a statement. Then a <code class="docutils literal"><span class="pre">lambda</span></code> can appear in places a <code class="docutils literal"><span class="pre">def</span></code> is not allowed by Python’s syntax:</p>
+<ul class="simple">
+<li>inside a list literal</li>
+<li>or a function call’s arguments, for example. As an expression, lambda returns a value (a new function) that can optionally be assigned a name. In contrast, the def statement always assigns the new function to the name in the header, instead of returning it as a result.</li>
+</ul>
+</li>
+<li><dl class="first docutils">
+<dt><code class="docutils literal"><span class="pre">lambda</span></code>’s body is a single expression, not a block of statements. The <code class="docutils literal"><span class="pre">lambda</span></code>’s body is similar to what you’d put in a <code class="docutils literal"><span class="pre">def</span></code> body’s return statement; you simply type the result as a naked expression, instead of explicitly returning it.</dt>
+<dd><p class="first last">Because it is limited to an expression, a <code class="docutils literal"><span class="pre">lambda</span></code> is less general than a <code class="docutils literal"><span class="pre">def</span></code> you can only squeeze so much logic into a <code class="docutils literal"><span class="pre">lambda</span></code> body without using statements such as <code class="docutils literal"><span class="pre">if</span></code>.
+This is by design, to limit program nesting: <code class="docutils literal"><span class="pre">lambda</span></code> is designed for coding simple functions, and <code class="docutils literal"><span class="pre">def</span></code> handles larger tasks.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>Apart from those distinctions, defs and lambdas do the same sort of work:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span> <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span> <span class="o">+</span> <span class="n">z</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">func</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="go">9</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">:</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span> <span class="o">+</span> <span class="n">z</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="go">9</span>
+</pre></div>
+</div>
+<p>We can use default arguments or tuple or dict argument like *args or **kwargs exactly as in <code class="docutils literal"><span class="pre">def</span></code> functions.
+The code in a <code class="docutils literal"><span class="pre">lambda</span></code> body also follows the same scope lookup rules (<a class="reference internal" href="#variable-resolution-rules"><span class="std std-ref">LGEB</span></a>)
+as code inside a def. lambda expressions introduce a local scope much like a nested def,
+which automatically sees names in enclosing functions, the module, and the built-in scope.</p>
+<div class="section" id="why-use-lambda">
+<h4>Why Use lambda?<a class="headerlink" href="#why-use-lambda" title="Permalink to this headline">¶</a></h4>
+<p>Generally speaking, lambdas come in handy as a sort of function shorthand that allows you to embed a function’s definition
+within the code that uses it. They are entirely optional (you can always use defs instead),
+but they tend to be simpler coding constructs in scenarios where you just need to embed small bits of executable code.</p>
+<p>For instance, it will very often use in function that take a function as parameter, as <code class="docutils literal"><span class="pre">sort</span></code>, <code class="docutils literal"><span class="pre">filter</span></code>, ...</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">namedtuple</span>
+<span class="n">Sequence</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;Sequence&quot;</span><span class="p">,</span> <span class="s2">&quot;id comment sequence&quot;</span><span class="p">)</span>
+<span class="n">sequences</span> <span class="o">=</span> <span class="p">[</span>
+   <span class="n">Sequence</span><span class="p">(</span><span class="s1">&#39;abcd3_rat&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;MAAFSKYLTARNSSLAGAAFLLFCLLHKRRRALGLHGKKSGKPPLQNNEKEGKKERAVVDKVFLSRLSQILKI&#39;</span><span class="p">),</span>
+   <span class="n">Sequence</span><span class="p">(</span><span class="s1">&#39;il2_human_matured&#39;</span><span class="p">,</span> <span class="s1">&#39;matured sequence of il2_human&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;APTSSSTKKTQLQLEHLLLDLQMILNGINNYKNPKLTRMLTFKFYMPKKATELKHLQCLEEELKPLEEV&#39;</span><span class="p">),</span>
+   <span class="n">Sequence</span><span class="p">(</span><span class="s1">&#39;il2_human&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;MYRMQLLSCIALSLALVTNSAPTSSSTKKTQLQLEHLLLDLQMILNGINNYKNPKLTRMLTFKFYMPKKATELKHLQCLE&#39;</span><span class="p">),</span>
+   <span class="n">Sequence</span><span class="p">(</span><span class="s1">&#39;TRYP_PIG&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span> <span class="p">,</span>
+            <span class="s1">&#39;FPTDDDDKIVGGYTCAANSIPYQVSLNSGSHFCGGSLINSQWVVSAAHCYKSRIQVRLGE&#39;</span><span class="p">)]</span>
+
+<span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">seq</span><span class="p">:</span> <span class="n">seq</span><span class="o">.</span><span class="n">sequence</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;M&#39;</span><span class="p">),</span> <span class="n">sequences</span><span class="p">)</span>
+
+<span class="p">[</span><span class="n">Sequence</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;il2_human&#39;</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+         <span class="n">sequence</span><span class="o">=</span><span class="s1">&#39;MYRMQLLSCIALSLALVTNSAPTSSSTKKTQLQLEHLLLDLQMILNGINNYKNPKLTRMLTFKFYMPKKATELKHLQCLE&#39;</span><span class="p">),</span>
+ <span class="n">Sequence</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;abcd3_rat&#39;</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+         <span class="n">sequence</span><span class="o">=</span><span class="s1">&#39;MAAFSKYLTARNSSLAGAAFLLFCLLHKRRRALGLHGKKSGKPPLQNNEKEGKKERAVVDKVFLSRLSQILKIMVPRTFC&#39;</span><span class="p">)]</span>
+
+<span class="n">sequences</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="k">lambda</span> <span class="n">seq1</span><span class="p">,</span> <span class="n">seq2</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">seq2</span><span class="o">.</span><span class="n">sequence</span><span class="p">)</span><span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">seq1</span><span class="o">.</span><span class="n">sequence</span><span class="p">))</span>
+
+<span class="p">[</span> <span class="p">(</span><span class="n">seq</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">seq</span><span class="o">.</span><span class="n">sequence</span><span class="p">))</span> <span class="k">for</span> <span class="n">seq</span> <span class="ow">in</span> <span class="n">sequences</span><span class="p">]</span>
+<span class="p">[(</span><span class="s1">&#39;il2_human&#39;</span><span class="p">,</span> <span class="mi">80</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;abcd3_rat&#39;</span><span class="p">,</span> <span class="mi">73</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;il2_human_matured&#39;</span><span class="p">,</span> <span class="mi">69</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;TRYP_PIG&#39;</span><span class="p">,</span> <span class="mi">60</span><span class="p">)]</span>
+</pre></div>
+</div>
+<p>Without due care, they can lead to unreadable (a.k.a. obfuscated) Python code.
+In general, simple is better than complex, explicit is better than implicit, and full statements are better than arcane expressions.
+That’s why lambda is limited to expressions. If you have larger logic to code, use def; lambda is for small pieces of inline code.
+On the other hand, you may find these techniques useful in moderation.</p>
+</div>
+</div>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<table class="docutils citation" frame="void" id="prog-in-python3" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[prog_in_python3]</a></td><td>Mark Summerfield, Programming in Python3 (addison wesley): <a class="reference external" href="http://www.qtrac.eu/py3book.html">http://www.qtrac.eu/py3book.html</a></td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="parameters-and-arguments" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[parameters_and_arguments]</a></td><td><a class="reference external" href="http://en.wikipedia.org/wiki/Parameter_(computer_programming)#Parameters_and_arguments">http://en.wikipedia.org/wiki/Parameter_(computer_programming)#Parameters_and_arguments</a></td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="franklin" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[Franklin]</td><td><em>(<a class="fn-backref" href="#id3">1</a>, <a class="fn-backref" href="#id6">2</a>)</em> Simeon Franklin <a class="reference external" href="http://simeonfranklin.com/blog/2012/jul/1/python-decorators-in-12-steps/">http://simeonfranklin.com/blog/2012/jul/1/python-decorators-in-12-steps/</a></td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="scope" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id5">[scope]</a></td><td><a class="reference external" href="http://en.wikipedia.org/wiki/Scope_(computer_science)#Python">http://en.wikipedia.org/wiki/Scope_(computer_science)#Python</a></td></tr>
+</tbody>
+</table>
+</div>
 <div class="section" id="authorship">
 <h2>Authorship<a class="headerlink" href="#authorship" title="Permalink to this headline">¶</a></h2>
 <table class="docutils field-list" frame="void" rules="none">
@@ -62,7 +857,7 @@
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Authors:</th><td class="field-body">freeh4cker &lt;freeh4cker (at) gmail.com&gt;</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Date:</th><td class="field-body">May 10, 2017</td>
+<tr class="field-even field"><th class="field-name">Date:</th><td class="field-body">May 11, 2017</td>
 </tr>
 </tbody>
 </table>
@@ -78,6 +873,36 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Fundamentals of python</a><ul>
+<li><a class="reference internal" href="#variables-vs-object-references">Variables vs object references</a><ul>
+<li><a class="reference internal" href="#value-and-type">Value and type</a></li>
+<li><a class="reference internal" href="#variables-and-object-references">Variables and Object references</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#immutable-objects">Immutable objects</a></li>
+<li><a class="reference internal" href="#mutable-objects">Mutable objects</a></li>
+<li><a class="reference internal" href="#functions">Functions</a><ul>
+<li><a class="reference internal" href="#functions-are-objects">Functions are objects</a></li>
+<li><a class="reference internal" href="#nested-functions">Nested functions</a></li>
+<li><a class="reference internal" href="#function-argument-vs-parameters">Function argument vs parameters</a></li>
+<li><a class="reference internal" href="#argument-and-parameter-unpacking">Argument and Parameter unpacking</a></li>
+<li><a class="reference internal" href="#arguments-and-parameters">Arguments and Parameters</a><ul>
+<li><a class="reference internal" href="#variable-number-of-parameters">Variable number of parameters</a></li>
+<li><a class="reference internal" href="#sequence-unpacking">Sequence unpacking</a></li>
+<li><a class="reference internal" href="#argument-unpacking">Argument unpacking</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#scope-of-variables">Scope of variables</a><ul>
+<li><a class="reference internal" href="#variable-resolution-rules">Variable resolution rules</a></li>
+<li><a class="reference internal" href="#variable-lifetime">Variable lifetime</a></li>
+<li><a class="reference internal" href="#lambda-functions">Lambda functions</a><ul>
+<li><a class="reference internal" href="#why-use-lambda">Why Use lambda?</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#references">References</a></li>
 <li><a class="reference internal" href="#authorship">Authorship</a></li>
 </ul>
 </li>
@@ -130,7 +955,7 @@
             &#169; Copyright 2017, freeh4cker. &nbsp; &nbsp;
            <br />
            <br />
-           Last updated on May 10, 2017. &nbsp; &nbsp;
+           Last updated on May 11, 2017. &nbsp; &nbsp;
         </div>
         <div id="show_sphinx">
            Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2. &nbsp; &nbsp;
